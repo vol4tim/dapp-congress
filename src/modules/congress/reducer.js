@@ -1,8 +1,12 @@
-import { ADD_LOG, RESULT_PROPOSAL, SET_BALANCE } from './actionTypes'
+import _ from 'lodash'
+import { LOAD_LOGS, ADD_LOG, RESULT_PROPOSAL, SET_BALANCE, SET_BALANCE_USD, SET_PROPOSALS, SET_VOTED } from './actionTypes'
 
 const initialState = {
+  loadLogs: false,
   logs: [],
   balance: 0,
+  balanceUsd: 0,
+  proposals: {},
   proposal: {
     id: 0,
     recipient: '',
@@ -19,9 +23,14 @@ const initialState = {
 
 export default function congress(state = initialState, action) {
   switch (action.type) {
+    case LOAD_LOGS: {
+      return { ...state, loadLogs: action.payload }
+    }
+
     case ADD_LOG: {
-      const logs = [...state.logs]
+      let logs = [...state.logs]
       logs.unshift(action.payload)
+      logs = _.reverse(_.sortBy(logs, item => item.block.timestamp))
       return { ...state, logs }
     }
 
@@ -31,6 +40,28 @@ export default function congress(state = initialState, action) {
 
     case SET_BALANCE: {
       return { ...state, balance: action.payload }
+    }
+
+    case SET_BALANCE_USD: {
+      return { ...state, balanceUsd: action.payload }
+    }
+
+    case SET_PROPOSALS: {
+      return { ...state, proposals: action.payload }
+    }
+
+    case SET_VOTED: {
+      const proposals = { ...state.proposals }
+      if (_.has(proposals, action.payload.id)) {
+        proposals[action.payload.id] = {
+          ...proposals[action.payload.id],
+          voted: {
+            ...proposals[action.payload.id].voted,
+            [action.payload.from]: action.payload.result
+          }
+        }
+      }
+      return { ...state, proposals }
     }
 
     default:

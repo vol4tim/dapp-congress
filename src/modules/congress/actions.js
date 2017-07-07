@@ -1,7 +1,8 @@
 import Promise from 'bluebird'
 import _ from 'lodash'
+import axios from 'axios'
 import hett from 'hett'
-import { ADD_LOG, RESULT_PROPOSAL, SET_BALANCE } from './actionTypes'
+import { LOAD_LOGS, ADD_LOG, RESULT_PROPOSAL, SET_BALANCE, SET_BALANCE_USD, SET_PROPOSALS, SET_VOTED } from './actionTypes'
 import { flashMessage } from '../app/actions'
 import { CONGRESS } from '../../config/config'
 
@@ -26,67 +27,163 @@ export function setBalance(balance) {
   }
 }
 
-export function logs() {
+export function setBalanceUsd(balance) {
+  return {
+    type: SET_BALANCE_USD,
+    payload: balance
+  }
+}
+
+export function setProposals(proposals) {
+  return {
+    type: SET_PROPOSALS,
+    payload: proposals
+  }
+}
+
+export function setVoted(id, from, result) {
+  return {
+    type: SET_VOTED,
+    payload: {
+      id,
+      from,
+      result
+    }
+  }
+}
+
+export function setLoad(bool) {
+  return {
+    type: LOAD_LOGS,
+    payload: bool
+  }
+}
+
+const getLogItem = (type, item) => {
+  let tx;
+  return hett.web3h.getTransaction(item.transactionHash)
+    .then((result) => {
+      if (result) {
+        tx = result
+        return hett.web3h.getBlock(tx.blockNumber)
+      }
+      return false
+    })
+    .then((block) => {
+      if (block) {
+        return {
+          type,
+          block,
+          tx,
+          result: item
+        }
+      }
+      return false
+    })
+}
+
+export function loadLogs() {
   return (dispatch) => {
-    hett.web3.eth.filter({ address: CONGRESS, fromBlock: 0, toBlock: 'latest' }, (error, result) => {
+    dispatch(setLoad(true))
+    const filter = hett.web3.eth.filter({ address: CONGRESS, fromBlock: 0, toBlock: 'latest' });
+    filter.get((error, result) => {
       if (!error) {
-        let type = 'none'
-        if (result.topics[0] === '0xc34f869b7ff431b034b7b9aea9822dac189a685e0b015c7d1be3add3f89128e8') { // Voted
-          type = 'Voted'
-        } else if (result.topics[0] === '0x646fec02522b41e7125cfc859a64fd4f4cefd5dc3b6237ca0abe251ded1fa881') { // ProposalAdded
-          type = 'ProposalAdded'
-        }
-        if (type !== 'none') {
-          hett.web3.eth.getTransaction(result.transactionHash, (e, tx) => {
-            hett.web3.eth.getBlock(tx.blockNumber, (error2, block) => {
-              dispatch(addLog({
-                type,
-                block,
-                tx,
-                result
-              }))
+        const items = []
+        _.forEach(result, (item) => {
+          let type = 'none'
+          if (item.topics[0] === '0xc34f869b7ff431b034b7b9aea9822dac189a685e0b015c7d1be3add3f89128e8') { // Voted
+            type = 'Voted'
+          } else if (item.topics[0] === '0x646fec02522b41e7125cfc859a64fd4f4cefd5dc3b6237ca0abe251ded1fa881') { // ProposalAdded
+            type = 'ProposalAdded'
+          }
+          if (type !== 'none') {
+            items.push(getLogItem(type, item))
+            dispatch(setVoted(
+              parseInt(item.topics[1].replace(/^0x[0]+/, ''), 16),
+              '0x' + item.topics[3].replace(/^0x[0]+/, ''),
+              Number(item.topics[2].replace(/^0x[0]+/, ''))
+            ))
+          }
+        })
+        Promise.all(items)
+          .then((logs) => {
+            _.forEach(logs, (item) => {
+              if (item) {
+                dispatch(addLog(item))
+              }
             })
+            dispatch(setLoad(false))
           })
-        }
       } else {
         console.log(error);
+        dispatch(setLoad(false))
       }
-    });
+    })
   }
 }
 
 export function loadBalance() {
   return (dispatch) => {
+    let balance = 0
     hett.web3h.getBalance(CONGRESS)
       .then((result) => {
+        balance = result
         dispatch(setBalance(result))
+        return axios.get('https://api.coinmarketcap.com/v1/ticker/ethereum/')
+      })
+      .then((result) => {
+        const data = result.data
+        // const data = [{ price_usd: 262.293 }]
+        dispatch(setBalanceUsd((balance * data[0].price_usd).toFixed(2)))
+      })
+  }
+}
+
+const getProposal = (congress, index) => (
+  congress.call('proposals', [index])
+    .then(result => (
+      {
+        id: index,
+        recipient: result[0],
+        amount: hett.web3.fromWei(Number(result[1])),
+        description: result[2],
+        votingDeadline: Number(result[3]),
+        executed: result[4],
+        proposalPassed: result[5],
+        numberOfVotes: Number(result[6]),
+        currentResult: Number(result[7]),
+        proposalHash: result[8],
+        // Vote[]  votes: result[0],
+        // mapping(address => bool) voted;
+      }
+    ))
+)
+export function loadProposals() {
+  return (dispatch) => {
+    let congress;
+    hett.getContractByName('Congress', CONGRESS)
+      .then((contract) => {
+        congress = contract;
+        return congress.call('numProposals')
+      })
+      .then((length) => {
+        const proposals = [];
+        for (let i = 0; i < Number(length); i += 1) {
+          proposals.push(getProposal(congress, i));
+        }
+        return Promise.all(proposals)
+      })
+      .then((proposals) => {
+        dispatch(setProposals(proposals))
       })
   }
 }
 
 export function loadProposal(id) {
   return (dispatch) => {
-    let congress;
     hett.getContractByName('Congress', CONGRESS)
-      .then((contract) => {
-        congress = contract;
-        return congress.call('proposals', [id])
-      })
-      .then(result => (
-        {
-          id,
-          recipient: result[0],
-          amount: hett.web3.fromWei(Number(result[1])),
-          description: result[2],
-          votingDeadline: Number(result[3]),
-          executed: result[4],
-          proposalPassed: result[5],
-          numberOfVotes: Number(result[6]),
-          currentResult: Number(result[7]),
-          proposalHash: result[8],
-          // Vote[]  votes: result[0],
-          // mapping(address => bool) voted;
-        }
+      .then(contract => (
+        getProposal(contract, id)
       ))
       .then((info) => {
         dispatch(resultProposal(info))
