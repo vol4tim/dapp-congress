@@ -2,24 +2,23 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import Notifications from 'react-notification-system-redux';
-import { PROGRAMMS } from '../../config/config'
+import { Link } from 'react-router'
+import { CONGRESS } from '../../config/config'
 
 import Header from '../components/app/header'
 import Footer from '../components/app/footer'
 import { flashMessage, setLanguage } from '../../modules/app/actions';
+import { loadBalance, loadProposals, loadLogs } from '../../modules/congress/actions';
+import { loadAccounts } from '../../modules/addressBook/actions';
 
 import './style.css'
 
-// @translate(['view', 'nav'], { wait: true })
 class App extends Component {
   componentWillMount() {
-    console.log(this);
-  }
-
-  componentWillReceiveProps(next) {
-    if (this.props.dao_address !== next.dao_address) {
-      this.props.loadCore(next.dao_address);
-    }
+    this.props.loadProposals();
+    this.props.loadBalance();
+    this.props.loadLogs();
+    this.props.loadAccounts();
   }
 
   render() {
@@ -38,15 +37,24 @@ class App extends Component {
     return (<div>
       <Header
         title={this.props.title}
-        dao_address={this.props.dao_address}
-        role={this.props.role}
         language={this.props.language}
         setLanguage={this.props.setLanguage}
-        programms={this.props.programms}
-        setDaoAddress={this.props.setDaoAddress}
+        congressAddress={this.props.congressAddress}
+        balance={this.props.balance}
+        balanceUsd={this.props.balanceUsd}
       />
       <div className="container" id="maincontainer">
-        {this.props.children}
+        <div className="row">
+          <div className="col-md-2">
+            <ul className="nav nav-pills nav-stacked">
+              <li><Link to="/"><i className="fa fa-university" /> Congress</Link></li>
+              <li><Link to="/address-book"><i className="fa fa-address-card" /> Address</Link></li>
+            </ul>
+          </div>
+          <div className="col-md-10" style={{ borderLeft: '1px solid #eee' }}>
+            {this.props.children}
+          </div>
+        </div>
       </div>
       <Footer />
       <Notifications
@@ -62,18 +70,28 @@ function mapStateToProps(state) {
   return {
     title: state.app.title,
     language: state.app.language,
-    programms: PROGRAMMS,
     notifications: state.notifications,
+    congressAddress: CONGRESS,
+    balance: state.congress.balance,
+    balanceUsd: state.congress.balanceUsd,
   }
 }
 function mapDispatchToProps(dispatch) {
   const actions = bindActionCreators({
     flashMessage,
-    setLanguage
+    setLanguage,
+    loadBalance,
+    loadProposals,
+    loadLogs,
+    loadAccounts,
   }, dispatch)
   return {
     flashMessage: actions.flashMessage,
-    setLanguage: actions.setLanguage
+    setLanguage: actions.setLanguage,
+    loadBalance: actions.loadBalance,
+    loadProposals: actions.loadProposals,
+    loadLogs: actions.loadLogs,
+    loadAccounts: actions.loadAccounts,
   }
 }
 

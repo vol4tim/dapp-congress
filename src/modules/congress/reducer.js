@@ -47,7 +47,11 @@ export default function congress(state = initialState, action) {
     }
 
     case SET_PROPOSALS: {
-      return { ...state, proposals: action.payload }
+      const proposals = {}
+      _.forEach(action.payload, (item) => {
+        proposals[item.id] = item
+      })
+      return { ...state, proposals }
     }
 
     case SET_VOTED: {

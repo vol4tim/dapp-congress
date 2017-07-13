@@ -1,21 +1,30 @@
 import React from 'react'
 import { Link } from 'react-router'
 
-// <div className="collapse navbar-collapse" id="navcol-1">
-//   <ul className="nav navbar-nav navbar-right">
-//     <li role="presentation"><Link to="/market-liability">market liability</Link></li>
-//     <li role="presentation"><Link to="/estimator">estimator</Link></li>
-//   </ul>
-// </div>
 const Header = function Header(props) {
   return (
-    <nav className="navbar navbar-default navbar-fixed-top">
+    <nav className="navbar navbar-default">
       <div className="container">
         <div className="navbar-header">
-          <Link to="/" className="navbar-brand navbar-link">
-            <img src="assets/img/aira-logo.svg" className="navbar-brand-img d-ib-mid" alt="" />
-            <span className="d-ib-mid">{props.title}</span>
+          <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span className="sr-only">Toggle navigation</span>
+            <span className="icon-bar" />
+            <span className="icon-bar" />
+            <span className="icon-bar" />
+          </button>
+          <Link className="navbar-brand" to="#">
+            <img src="assets/img/aira-logo.svg" style={{ float: 'left', marginRight: 10, marginTop: -7 }} alt="" />
+            <div style={{ marginTop: -10, float: 'right' }}>
+              {props.title}<br />
+              <small>{props.congressAddress}</small>
+            </div>
           </Link>
+        </div>
+        <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul className="nav navbar-nav navbar-right">
+            <li className="navbar-text">Balance: <b>{props.balance} ETH ({props.balanceUsd} USD)</b></li>
+            <li><Link to="#"><span className="glyphicon glyphicon-bell" /></Link></li>
+          </ul>
         </div>
       </div>
     </nav>
