@@ -7,7 +7,6 @@ class Main extends Component {
       beneficiary: '',
       amount: '',
       jobDescription: '',
-      address: '',
       abi: '',
       action: '',
       params: []
@@ -105,10 +104,6 @@ class Main extends Component {
           <div className="panel panel-default">
             <div className="panel-heading">Code</div>
             <div className="panel-body">
-              <div className="form-group">
-                <label>address</label>
-                <input type="text" value={this.state.address} onChange={this.handleChange} name="address" className="form-control" />
-              </div>
               <div className="form-group">
                 <label>abi</label>
                 <textarea value={this.state.abi} onChange={this.handleChange} name="abi" className="form-control" />

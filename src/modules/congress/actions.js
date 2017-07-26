@@ -219,17 +219,17 @@ export function send(action, data) {
 export function addProposal(data) {
   return (dispatch) => {
     let bytecode = ''
-    if (_.has(data, 'address') && _.has(data, 'action') && !_.isEmpty(data.address) && !_.isEmpty(data.action)) {
+    if (_.has(data, 'action') && !_.isEmpty(data.action)) {
       let abi = [];
       try {
         abi = JSON.parse(data.abi.trim());
-        const contract = hett.getContract(abi, data.address)
+        const contract = hett.getContract(abi, '')
         const params = (_.has(data, 'params')) ? data.params : []
         bytecode = contract.web3Contract[data.action].getData(...params)
       } catch (e) {
         console.log(e);
       }
     }
-    dispatch(send('Congress', CONGRESS, 'newProposal', [data.beneficiary, data.amount, data.jobDescription, bytecode]))
+    dispatch(send('newProposal', [data.beneficiary, data.amount, data.jobDescription, bytecode]))
   }
 }
