@@ -1,16 +1,36 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { Form } from 'vol4-form'
 import Page from './page'
-import { Form } from '../components/form';
+import { Form as Fields } from '../components/form'
 import { saveField } from '../../../modules/settings/actions';
 
 const Container = props => (
   <Page title="Set congress address">
-    <Form onSubmit={props.onSubmit} />
+    <Form id="saveField" {...props}>
+      <Fields />
+    </Form>
   </Page>
 )
 
+function mapStateToProps() {
+  return {
+    fields: {
+      address: {
+        value: '',
+        type: 'text'
+      }
+    },
+    onValidate: (form) => {
+      const errors = {}
+      if (form.address === '') {
+        errors.address = 'обязательное поле'
+      }
+      return errors;
+    }
+  }
+}
 function mapDispatchToProps(dispatch) {
   const actions = bindActionCreators({
     saveField
@@ -20,4 +40,4 @@ function mapDispatchToProps(dispatch) {
   }
 }
 
-export default connect(null, mapDispatchToProps)(Container)
+export default connect(mapStateToProps, mapDispatchToProps)(Container)
