@@ -25,7 +25,7 @@ class Main extends Component {
           </div>
           <button
             onClick={(e) => {
-              this.props.onSubmit(true, this.state.desc);
+              this.props.onSubmit(this.props.congressAddress, true, this.state.desc);
               e.preventDefault();
             }}
             className="btn btn-success"
@@ -33,7 +33,7 @@ class Main extends Component {
           >Ok</button>
           <button
             onClick={(e) => {
-              this.props.onSubmit(false, this.state.desc);
+              this.props.onSubmit(this.props.congressAddress, false, this.state.desc);
               e.preventDefault();
             }}
             className="btn btn-danger"

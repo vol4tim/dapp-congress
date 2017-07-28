@@ -4,7 +4,7 @@ import axios from 'axios'
 import hett from 'hett'
 import { LOAD_LOGS, ADD_LOG, RESULT_PROPOSAL, SET_BALANCE, SET_BALANCE_USD, SET_PROPOSALS, SET_VOTED } from './actionTypes'
 import { flashMessage } from '../app/actions'
-import { CONGRESS } from '../../config/config'
+// import { CONGRESS } from '../../config/config'
 
 export function addLog(info) {
   return {
@@ -82,10 +82,10 @@ const getLogItem = (type, item) => {
     })
 }
 
-export function loadLogs() {
+export function loadLogs(congressAddress) {
   return (dispatch) => {
     dispatch(setLoad(true))
-    const filter = hett.web3.eth.filter({ address: CONGRESS, fromBlock: 0, toBlock: 'latest' });
+    const filter = hett.web3.eth.filter({ address: congressAddress, fromBlock: 0, toBlock: 'latest' });
     filter.get((error, result) => {
       if (!error) {
         const items = []
@@ -122,10 +122,10 @@ export function loadLogs() {
   }
 }
 
-export function loadBalance() {
+export function loadBalance(congressAddress) {
   return (dispatch) => {
     let balance = 0
-    hett.web3h.getBalance(CONGRESS)
+    hett.web3h.getBalance(congressAddress)
       .then((result) => {
         balance = result
         dispatch(setBalance(result))
@@ -133,7 +133,6 @@ export function loadBalance() {
       })
       .then((result) => {
         const data = result.data
-        // const data = [{ price_usd: 262.293 }]
         dispatch(setBalanceUsd((balance * data[0].price_usd).toFixed(2)))
       })
   }
@@ -158,10 +157,10 @@ const getProposal = (congress, index) => (
       }
     ))
 )
-export function loadProposals() {
+export function loadProposals(congressAddress) {
   return (dispatch) => {
     let congress;
-    hett.getContractByName('Congress', CONGRESS)
+    hett.getContractByName('Congress', congressAddress)
       .then((contract) => {
         congress = contract;
         return congress.call('numProposals')
@@ -179,9 +178,9 @@ export function loadProposals() {
   }
 }
 
-export function loadProposal(id) {
+export function loadProposal(address, id) {
   return (dispatch) => {
-    hett.getContractByName('Congress', CONGRESS)
+    hett.getContractByName('Congress', address)
       .then(contract => (
         getProposal(contract, id)
       ))
@@ -210,13 +209,13 @@ export function contractSend(abi, address, action, values) {
   )
 }
 
-export function send(action, data) {
+export function send(address, action, data) {
   return (dispatch) => {
-    dispatch(contractSend('Congress', CONGRESS, action, data))
+    dispatch(contractSend('Congress', address, action, data))
   }
 }
 
-export function addProposal(data) {
+export function addProposal(address, data) {
   return (dispatch) => {
     let bytecode = ''
     if (_.has(data, 'action') && !_.isEmpty(data.action)) {
@@ -230,6 +229,6 @@ export function addProposal(data) {
         console.log(e);
       }
     }
-    dispatch(send('newProposal', [data.beneficiary, data.amount, data.jobDescription, bytecode]))
+    dispatch(send(address, 'newProposal', [data.beneficiary, data.amount, data.jobDescription, bytecode]))
   }
 }

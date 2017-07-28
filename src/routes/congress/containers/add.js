@@ -11,13 +11,18 @@ const Add = props => (
   </Page>
 )
 
+function mapStateToProps(state) {
+  return {
+    congressAddress: state.settings.fields.address,
+  }
+}
 function mapDispatchToProps(dispatch) {
   const actions = bindActionCreators({
     addProposal
   }, dispatch)
   return {
-    onSubmit: form => actions.addProposal(form)
+    onSubmit: (address, form) => actions.addProposal(address, form)
   }
 }
 
-export default connect(null, mapDispatchToProps)(Add)
+export default connect(mapStateToProps, mapDispatchToProps)(Add)

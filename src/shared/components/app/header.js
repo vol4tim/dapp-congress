@@ -12,7 +12,7 @@ const Header = function Header(props) {
             <span className="icon-bar" />
             <span className="icon-bar" />
           </button>
-          <Link className="navbar-brand" to="#">
+          <Link className="navbar-brand" to="/">
             <img src="assets/img/aira-logo.svg" style={{ float: 'left', marginRight: 10, marginTop: -7 }} alt="" />
             <div style={{ marginTop: -10, float: 'right' }}>
               {props.title}<br />

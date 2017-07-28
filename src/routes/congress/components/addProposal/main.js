@@ -81,7 +81,7 @@ class Main extends Component {
   }
 
   handleSubmit(event) {
-    this.props.onSubmit(this.state);
+    this.props.onSubmit(this.props.congressAddress, this.state);
     event.preventDefault();
   }
 

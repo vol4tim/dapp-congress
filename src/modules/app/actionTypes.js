@@ -1,1 +1,2 @@
-export const SET_LANGUAGE = 'SET_LANGUAGE'
+export const LOAD = 'APP_LOAD'
+export const SET_LANGUAGE = 'APP_SET_LANGUAGE'

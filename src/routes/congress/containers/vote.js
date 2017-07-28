@@ -66,7 +66,8 @@ function mapStateToProps(state, props) {
     proposal,
     ok,
     no,
-    myVote
+    myVote,
+    congressAddress: state.settings.fields.address,
   }
 }
 function mapDispatchToProps(dispatch, props) {
@@ -74,7 +75,7 @@ function mapDispatchToProps(dispatch, props) {
     send
   }, dispatch)
   return {
-    onSubmit: (result, desc) => actions.send('vote', [props.params.id, result, desc])
+    onSubmit: (address, result, desc) => actions.send(address, 'vote', [props.params.id, result, desc])
   }
 }
 

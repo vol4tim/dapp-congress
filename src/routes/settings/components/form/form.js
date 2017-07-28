@@ -4,8 +4,7 @@ class Main extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      address: props.address,
-      name: props.name
+      address: props.address
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -27,12 +26,8 @@ class Main extends Component {
       <div>
         <form onSubmit={this.handleSubmit}>
           <div className="form-group">
-            <label>address</label>
-            <input type="text" value={this.state.address} onChange={this.handleChange} name="address" className="form-control" disabled />
-          </div>
-          <div className="form-group">
-            <label>name</label>
-            <input type="text" value={this.state.name} onChange={this.handleChange} name="name" className="form-control" />
+            <label>congress address</label>
+            <input type="text" value={this.state.address} onChange={this.handleChange} name="address" className="form-control" />
           </div>
           <button type="submit" className="btn btn-default">Save</button>
         </form>
