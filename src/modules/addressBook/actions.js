@@ -1,4 +1,5 @@
 import store from 'store'
+import { actions as actionsForm } from 'vol4-form'
 import { SET_ACCOUNTS, ADD_ACCOUNT, REMOVE_ACCOUNT } from './actionTypes'
 
 export function addAccount(item) {
@@ -26,5 +27,14 @@ export function loadAccounts() {
   return (dispatch) => {
     const accounts = store.get('accounts')
     dispatch(setAccounts(accounts))
+  }
+}
+
+export function save(form) {
+  return (dispatch) => {
+    dispatch(actionsForm.start('addressBook'));
+    dispatch(addAccount(form))
+    dispatch(actionsForm.stop('addressBook'));
+    dispatch(actionsForm.success('addressBook', 'Сохранено'));
   }
 }

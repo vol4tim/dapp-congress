@@ -2,39 +2,65 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import _ from 'lodash'
+import { Form } from 'vol4-form'
 import Page from './page'
 import { Add, Edit } from '../components/form';
-import { addAccount } from '../../../modules/addressBook/actions';
+import { save } from '../../../modules/addressBook/actions';
 
-const Form = props => (
-  <Page title="Add voting">
-    {props.isNew ?
-      <Add onSubmit={props.onSubmit} />
-      :
-      <Edit {...props.item} onSubmit={props.onSubmit} />
-    }
+const Container = props => (
+  <Page title={(props.isNew) ? 'Add address' : 'Edit address'}>
+    <Form id="addressBook" {...props} onSubmit={props.onSubmit}>
+      {props.isNew ?
+        <Add />
+        :
+        <Edit />
+      }
+    </Form>
   </Page>
 )
 
 function mapStateToProps(state, props) {
+  const fields = {
+    address: {
+      value: '',
+      type: 'text',
+      error: ''
+    },
+    name: {
+      value: '',
+      type: 'text',
+      error: ''
+    }
+  }
   let isNew = true;
-  let item = {};
   if (_.has(state.addressBook.items, props.params.address)) {
     isNew = false;
-    item = state.addressBook.items[props.params.address]
+    const item = state.addressBook.items[props.params.address]
+    fields.address.value = item.address
+    fields.name.value = item.name
   }
   return {
     isNew,
-    item,
+    fields,
+    onValidate: (form) => {
+      const errors = {}
+      if (form.address === '') {
+        errors.address = 'обязательное поле'
+      }
+      if (form.name === '') {
+        errors.name = 'обязательное поле'
+      }
+      return errors;
+    }
   }
 }
 function mapDispatchToProps(dispatch) {
   const actions = bindActionCreators({
-    addAccount
+    save
   }, dispatch)
   return {
-    onSubmit: form => actions.addAccount(form)
+    onSubmit: form => actions.save(form)
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form)
+export default connect(mapStateToProps, mapDispatchToProps)(Container)

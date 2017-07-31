@@ -1,44 +1,26 @@
-import React, { Component } from 'react'
+import React from 'react'
 
-class Main extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      address: props.address,
-      name: props.name
-    };
+const Form = props => (
+  <form onSubmit={props.handleSubmit}>
+    <div className={(props.fields.address.error) ? 'form-group has-error' : 'form-group'}>
+      <label>address</label>
+      <input value={props.fields.address.value} onChange={props.handleChange} name="address" type="text" className="form-control" disabled />
+      {props.fields.address.error &&
+        <span className="help-block">{props.fields.address.error}</span>
+      }
+    </div>
+    <div className={(props.fields.name.error) ? 'form-group has-error' : 'form-group'}>
+      <label>name</label>
+      <input value={props.fields.name.value} onChange={props.handleChange} name="name" type="text" className="form-control" />
+      {props.fields.name.error &&
+        <span className="help-block">{props.fields.name.error}</span>
+      }
+    </div>
+    <button type="submit" className="btn btn-primary" disabled={props.form.submitting}>Save</button>
+    {props.form.success &&
+      <div className="alert alert-success">{props.form.success}</div>
+    }
+  </form>
+)
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleChange(event) {
-    const value = event.target.value;
-    this.setState({ [event.target.name]: value });
-  }
-
-  handleSubmit(event) {
-    this.props.onSubmit(this.state);
-    event.preventDefault();
-  }
-
-  render() {
-    return (
-      <div>
-        <form onSubmit={this.handleSubmit}>
-          <div className="form-group">
-            <label>address</label>
-            <input type="text" value={this.state.address} onChange={this.handleChange} name="address" className="form-control" disabled />
-          </div>
-          <div className="form-group">
-            <label>name</label>
-            <input type="text" value={this.state.name} onChange={this.handleChange} name="name" className="form-control" />
-          </div>
-          <button type="submit" className="btn btn-default">Save</button>
-        </form>
-      </div>
-    );
-  }
-}
-
-export default Main
+export default Form

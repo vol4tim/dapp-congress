@@ -37,15 +37,16 @@ export function saveField(field, value) {
     dispatch(setField(field, value))
     dispatch(loadApp())
     dispatch(actionsForm.stop('saveField'));
-    dispatch(actionsForm.reset('saveField'));
   }
 }
 
 export function saveAll(settings) {
   return (dispatch) => {
+    dispatch(actionsForm.start('settings'));
     store.set('settings', settings)
     dispatch(setAll(settings))
     dispatch(loadApp())
+    dispatch(actionsForm.stop('settings'));
   }
 }
 
