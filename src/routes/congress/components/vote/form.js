@@ -23,22 +23,24 @@ class Main extends Component {
             <label>Comment</label>
             <textarea onChange={this.handleChange} name="desc" className="form-control">{this.state.desc}</textarea>
           </div>
-          <button
-            onClick={(e) => {
-              this.props.onSubmit(this.props.congressAddress, true, this.state.desc);
-              e.preventDefault();
-            }}
-            className="btn btn-success"
-            style={{ width: '50%' }}
-          >Ok</button>
-          <button
-            onClick={(e) => {
-              this.props.onSubmit(this.props.congressAddress, false, this.state.desc);
-              e.preventDefault();
-            }}
-            className="btn btn-danger"
-            style={{ width: '50%' }}
-          >No</button>
+          <div className="btn-group" style={{ width: '100%' }}>
+            <button
+              onClick={(e) => {
+                this.props.onSubmit(this.props.congressAddress, true, this.state.desc);
+                e.preventDefault();
+              }}
+              className="btn btn-success"
+              style={{ width: '50%' }}
+            >Ok</button>
+            <button
+              onClick={(e) => {
+                this.props.onSubmit(this.props.congressAddress, false, this.state.desc);
+                e.preventDefault();
+              }}
+              className="btn btn-danger"
+              style={{ width: '50%' }}
+            >No</button>
+          </div>
         </form>
       </div>
     );
