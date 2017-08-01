@@ -8,7 +8,7 @@ import { timeConverter } from '../../../utils/helper'
 const List = props => (
   <Page title={(props.type === 'completed') ? 'Completed Votings' : 'New Votings'}>
     <ul className="nav nav-pills pull-right">
-      <li><Link to="/">new</Link></li>
+      <li><Link to="/"><i className="fa fa-file-o" /> new</Link></li>
       <li><Link to="/congress/list/completed"><i className="fa fa-filter" /> completed</Link></li>
     </ul>
     <table className="table table-striped">
