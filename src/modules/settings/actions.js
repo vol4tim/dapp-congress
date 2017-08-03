@@ -1,5 +1,6 @@
 import Promise from 'bluebird'
 import store from 'store'
+import _ from 'lodash'
 import { actions as actionsForm } from 'vol4-form'
 import { LOAD, SET_FIELD, SET_ALL } from './actionTypes'
 import { load as loadApp } from '../app/actions'
@@ -31,7 +32,10 @@ export function setAll(settings) {
 export function saveField(field, value) {
   return (dispatch) => {
     dispatch(actionsForm.start('saveField'));
-    const settings = store.get('settings')
+    let settings = store.get('settings')
+    if (_.isUndefined(settings)) {
+      settings = {}
+    }
     settings[field] = value
     store.set('settings', settings)
     dispatch(setField(field, value))
@@ -53,7 +57,9 @@ export function saveAll(settings) {
 export function load() {
   return (dispatch) => {
     const settings = store.get('settings')
-    dispatch(setAll(settings))
+    if (!_.isUndefined(settings)) {
+      dispatch(setAll(settings))
+    }
     dispatch(setLoad(true))
     return Promise.resolve(settings)
   }

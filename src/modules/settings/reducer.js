@@ -18,7 +18,7 @@ export default function settings(state = initialState, action) {
     }
 
     case SET_ALL: {
-      return { ...state, fields: action.payload }
+      return { ...state, fields: { ...state.fields, ...action.payload } }
     }
 
     default:

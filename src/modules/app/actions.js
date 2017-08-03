@@ -1,5 +1,6 @@
 import Notifications from 'react-notification-system-redux';
 import i18next from 'i18next'
+import _ from 'lodash'
 import { LOAD, SET_LANGUAGE } from './actionTypes'
 import { load as loadSettings } from '../settings/actions';
 import { loadBalance, loadProposals, loadLogs } from '../congress/actions';
@@ -41,7 +42,7 @@ export function load() {
     dispatch(setLoad(false));
     dispatch(loadSettings())
       .then((settings) => {
-        if (settings.address !== '') {
+        if (_.has(settings, 'address') && settings.address !== '') {
           dispatch(loadProposals(settings.address));
           dispatch(loadBalance(settings.address));
           dispatch(loadLogs(settings.address));
