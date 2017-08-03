@@ -20,8 +20,7 @@ function mapStateToProps(state) {
   _.forEach(state.settings.fields, (value, field) => {
     fields[field] = {
       value,
-      type: 'text',
-      error: ''
+      type: 'text'
     }
   })
   return {

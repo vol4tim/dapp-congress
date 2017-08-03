@@ -13,8 +13,7 @@ export const routes = () =>
       <Route path="/congress">
         <Route path="list(/:type)" component={Congress.List} />
         <Route path="add" component={Congress.Add} />
-        <Route path="view/:id" component={Congress.View} />
-        <Route path="vote/:id" component={Congress.Vote} />
+        <Route path="proposal/:id" component={Congress.Proposal} />
       </Route>
       <Route path="/address-book">
         <IndexRoute component={AddressBook.List} />

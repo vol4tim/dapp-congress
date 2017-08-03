@@ -24,12 +24,10 @@ function mapStateToProps(state, props) {
     address: {
       value: '',
       type: 'text',
-      error: ''
     },
     name: {
       value: '',
       type: 'text',
-      error: ''
     }
   }
   let isNew = true;

@@ -2,6 +2,7 @@ import Promise from 'bluebird'
 import _ from 'lodash'
 import axios from 'axios'
 import hett from 'hett'
+import { actions as formActions } from 'vol4-form'
 import { LOAD_LOGS, ADD_LOG, RESULT_PROPOSAL, SET_BALANCE, SET_BALANCE_USD, SET_PROPOSALS, SET_VOTED } from './actionTypes'
 import { flashMessage } from '../app/actions'
 // import { CONGRESS } from '../../config/config'
@@ -138,10 +139,10 @@ export function loadBalance(congressAddress) {
   }
 }
 
-const getProposal = (congress, index) => (
+const getProposal = (congress, index, minimumQuorum) => (
   congress.call('proposals', [index])
-    .then(result => (
-      {
+    .then((result) => {
+      const proposal = {
         id: index,
         recipient: result[0],
         amount: hett.web3.fromWei(Number(result[1])),
@@ -151,24 +152,39 @@ const getProposal = (congress, index) => (
         proposalPassed: result[5],
         numberOfVotes: Number(result[6]),
         currentResult: Number(result[7]),
-        proposalHash: result[8],
+        proposalHash: result[8]
         // Vote[]  votes: result[0],
         // mapping(address => bool) voted;
       }
-    ))
+      const now = (new Date().getTime()) / 1000
+      proposal.type = 'completed' // можно исполненить, принимаются голоса
+      if (proposal.executed === true) {
+        proposal.type = 'executed' // исполнен, голосовать уже не нужно
+      } else if (now < proposal.votingDeadline) {
+        proposal.type = 'pending' // время голосования еще не законченно, принимаются голоса
+      } else if (proposal.numberOfVotes < minimumQuorum) {
+        proposal.type = 'quorum' // кворум не собран, время уже подошло, но голоса принимаются
+      }
+      return proposal;
+    })
 )
 export function loadProposals(congressAddress) {
   return (dispatch) => {
     let congress;
+    let minimumQuorum;
     hett.getContractByName('Congress', congressAddress)
       .then((contract) => {
         congress = contract;
+        return congress.call('minimumQuorum')
+      })
+      .then((result) => {
+        minimumQuorum = Number(result)
         return congress.call('numProposals')
       })
       .then((length) => {
         const proposals = [];
         for (let i = 0; i < Number(length); i += 1) {
-          proposals.push(getProposal(congress, i));
+          proposals.push(getProposal(congress, i, minimumQuorum));
         }
         return Promise.all(proposals)
       })
@@ -178,17 +194,17 @@ export function loadProposals(congressAddress) {
   }
 }
 
-export function loadProposal(address, id) {
-  return (dispatch) => {
-    hett.getContractByName('Congress', address)
-      .then(contract => (
-        getProposal(contract, id)
-      ))
-      .then((info) => {
-        dispatch(resultProposal(info))
-      })
-  }
-}
+// export function loadProposal(address, id) {
+//   return (dispatch) => {
+//     hett.getContractByName('Congress', address)
+//       .then(contract => (
+//         getProposal(contract, id)
+//       ))
+//       .then((info) => {
+//         dispatch(resultProposal(info))
+//       })
+//   }
+// }
 
 export function contractSend(abi, address, action, values) {
   return dispatch => (
@@ -215,20 +231,89 @@ export function send(address, action, data) {
   }
 }
 
-export function addProposal(address, data) {
-  return (dispatch) => {
+function getData(abi, action, params) {
+  try {
+    const abiJson = JSON.parse(abi.trim());
+    const contract = hett.getContract(abiJson, '')
+    return contract.web3Contract[action].getData(...params)
+  } catch (e) {
+    console.log(e);
+  }
+  return false;
+}
+
+export function addProposal(form) {
+  return (dispatch, getState) => {
+    const state = getState()
+    const address = state.settings.fields.address
     let bytecode = ''
-    if (_.has(data, 'action') && !_.isEmpty(data.action)) {
-      let abi = [];
-      try {
-        abi = JSON.parse(data.abi.trim());
-        const contract = hett.getContract(abi, '')
-        const params = (_.has(data, 'params')) ? data.params : []
-        bytecode = contract.web3Contract[data.action].getData(...params)
-      } catch (e) {
-        console.log(e);
-      }
+    if (_.has(form, 'action') && !_.isEmpty(form.action)) {
+      const params = (_.has(form, 'params')) ? _.values(form.params) : []
+      bytecode = getData(form.abi, form.action, params)
     }
-    dispatch(send(address, 'newProposal', [data.beneficiary, data.amount, data.jobDescription, bytecode]))
+    dispatch(send(address, 'newProposal', [form.beneficiary, form.amount, form.jobDescription, bytecode]))
+  }
+}
+
+export function execute(id, form) {
+  return (dispatch, getState) => {
+    const state = getState()
+    const address = state.settings.fields.address
+    dispatch(formActions.start('execute' + id))
+    let bytecode = ''
+    if (!_.isEmpty(form.action)) {
+      bytecode = getData(form.abi, form.action, _.values(form.params))
+    }
+    console.log([id, bytecode]);
+    dispatch(contractSend('Congress', address, 'executeProposal', [id, bytecode]))
+      .then(() => {
+        dispatch(formActions.stop('execute' + id))
+        dispatch(formActions.success('check' + id, 'Исполнено'))
+      })
+      .catch(() => {
+        dispatch(formActions.stop('execute' + id))
+      })
+  }
+}
+
+export function vote(id, form) {
+  return (dispatch, getState) => {
+    const state = getState()
+    const address = state.settings.fields.address
+    dispatch(formActions.start('vote' + id))
+    console.log([id, form.bool, form.comment]);
+    dispatch(contractSend('Congress', address, 'vote', [id, form.bool, form.comment]))
+      .then(() => {
+        dispatch(formActions.stop('check' + id))
+        dispatch(formActions.success('check' + id, 'Голос принят'))
+      })
+      .catch(() => {
+        dispatch(formActions.stop('vote' + id))
+      })
+  }
+}
+
+export function checkProposalCode(id, form) {
+  return (dispatch, getState) => {
+    const state = getState()
+    const address = state.settings.fields.address
+    const proposal = state.congress.proposals[id]
+    dispatch(formActions.start('check' + id))
+    hett.getContractByName('Congress', address)
+      .then((contract) => {
+        let bytecode = ''
+        if (!_.isEmpty(form.action)) {
+          bytecode = getData(form.abi, form.action, _.values(form.params))
+        }
+        return contract.call('checkProposalCode', [id, proposal.recipient, hett.web3.toWei(proposal.amount), bytecode])
+      })
+      .then((result) => {
+        dispatch(formActions.stop('check' + id))
+        if (result) {
+          dispatch(formActions.success('check' + id, 'True'))
+        } else {
+          dispatch(formActions.error('check' + id, 'False'))
+        }
+      })
   }
 }

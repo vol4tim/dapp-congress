@@ -92,28 +92,9 @@ class Main extends Component {
   render() {
     return (
       <div>
+        <h3 className="text-center">Execute</h3>
+        <hr />
         <form onSubmit={this.props.handleSubmit}>
-          <div className={(this.props.fields.beneficiary.error) ? 'form-group has-error' : 'form-group'}>
-            <label>beneficiary</label>
-            <input type="text" value={this.props.fields.beneficiary.value} onChange={this.props.handleChange} name="beneficiary" className="form-control" />
-            {this.props.fields.beneficiary.error &&
-              <span className="help-block">{this.props.fields.beneficiary.error}</span>
-            }
-          </div>
-          <div className={(this.props.fields.amount.error) ? 'form-group has-error' : 'form-group'}>
-            <label>amount</label>
-            <input type="text" value={this.props.fields.amount.value} onChange={this.props.handleChange} name="amount" className="form-control" />
-            {this.props.fields.amount.error &&
-              <span className="help-block">{this.props.fields.amount.error}</span>
-            }
-          </div>
-          <div className={(this.props.fields.jobDescription.error) ? 'form-group has-error' : 'form-group'}>
-            <label>jobDescription</label>
-            <input type="text" value={this.props.fields.jobDescription.value} onChange={this.props.handleChange} name="jobDescription" className="form-control" />
-            {this.props.fields.jobDescription.error &&
-              <span className="help-block">{this.props.fields.jobDescription.error}</span>
-            }
-          </div>
           <div className="panel panel-default">
             <div className="panel-heading">Code</div>
             <div className="panel-body">
@@ -137,7 +118,7 @@ class Main extends Component {
               </div>
             </div>
           </div>
-          <button type="submit" className="btn btn-default" disabled={this.props.form.submitting}>Add</button>
+          <button type="submit" className="btn btn-primary btn-block" disabled={this.props.form.submitting}>Execute</button>
           {this.props.form.error &&
             <div className="alert alert-danger">{this.props.form.error}</div>
           }
