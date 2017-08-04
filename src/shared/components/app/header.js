@@ -23,7 +23,20 @@ const Header = function Header(props) {
         <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul className="nav navbar-nav navbar-right">
             <li className="navbar-text">Balance: <b>{props.balance} ETH ({props.balanceUsd} USD)</b></li>
-            <li><Link to="#"><span className="glyphicon glyphicon-bell" /></Link></li>
+            <li className={(props.isReadLogs) ? 'dropdown' : 'dropdown bg-danger'}>
+              <Link to="#" onClick={props.onReadLogs} className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                <span className="glyphicon glyphicon-bell text-danger" />
+              </Link>
+              <ul className="dropdown-menu" style={{ width: 250 }}>
+                {props.logs.map((item, index) => (
+                  <li key={index} style={{ padding: '3px 20px' }}>{item}</li>
+                ))}
+                <li role="separator" className="divider" />
+                <li className="text-right" style={{ paddingRight: 5 }}>
+                  <button className="btn btn-warning btn-xs" onClick={props.onClearLogs}><i className="fa fa-trash-o" /> Clear</button>
+                </li>
+              </ul>
+            </li>
           </ul>
         </div>
       </div>

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import Notifications from 'react-notification-system-redux';
+import _ from 'lodash'
 
 import Header from '../components/app/header'
 import Footer from '../components/app/footer'
@@ -9,6 +10,7 @@ import Sidebar from '../components/app/sidebar'
 import Load from '../components/app/load'
 import * as Start from '../../routes/start'
 import { load, flashMessage, setLanguage } from '../../modules/app/actions';
+import { read as readLogs, clearSave as clearLogs } from '../../modules/logs/actions';
 
 import './style.css'
 
@@ -43,6 +45,10 @@ class App extends Component {
         congressAddress={this.props.settings.fields.address}
         balance={this.props.balance}
         balanceUsd={this.props.balanceUsd}
+        logs={this.props.logs}
+        isReadLogs={this.props.isReadLogs}
+        onClearLogs={this.props.clearLogs}
+        onReadLogs={this.props.readLogs}
       />
       <div className="container" id="maincontainer">
         <div className="row">
@@ -73,6 +79,8 @@ function mapStateToProps(state) {
     notifications: state.notifications,
     balance: state.congress.balance,
     balanceUsd: state.congress.balanceUsd,
+    logs: _.reverse(state.logs.messages.slice(-5)),
+    isReadLogs: state.logs.isRead
   }
 }
 function mapDispatchToProps(dispatch) {
@@ -80,11 +88,15 @@ function mapDispatchToProps(dispatch) {
     load,
     flashMessage,
     setLanguage,
+    clearLogs,
+    readLogs,
   }, dispatch)
   return {
     load: actions.load,
     flashMessage: actions.flashMessage,
     setLanguage: actions.setLanguage,
+    clearLogs: actions.clearLogs,
+    readLogs: actions.readLogs,
   }
 }
 

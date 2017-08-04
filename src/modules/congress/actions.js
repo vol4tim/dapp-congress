@@ -99,8 +99,14 @@ export function loadLogs(congressAddress) {
           }
           if (type !== 'none') {
             items.push(getLogItem(type, item))
+          }
+          if (type === 'Voted') {
+            let id = parseInt(item.topics[1].replace(/^0x[0]+/, ''), 16);
+            if (_.isNaN(id)) {
+              id = 0
+            }
             dispatch(setVoted(
-              parseInt(item.topics[1].replace(/^0x[0]+/, ''), 16),
+              id,
               '0x' + item.topics[3].replace(/^0x[0]+/, ''),
               Number(item.topics[2].replace(/^0x[0]+/, ''))
             ))
@@ -168,11 +174,12 @@ const getProposal = (congress, index, minimumQuorum) => (
       return proposal;
     })
 )
+
 export function loadProposals(congressAddress) {
   return (dispatch) => {
     let congress;
     let minimumQuorum;
-    hett.getContractByName('Congress', congressAddress)
+    return hett.getContractByName('Congress', congressAddress)
       .then((contract) => {
         congress = contract;
         return congress.call('minimumQuorum')
@@ -190,21 +197,64 @@ export function loadProposals(congressAddress) {
       })
       .then((proposals) => {
         dispatch(setProposals(proposals))
+        return Promise.resolve()
       })
   }
 }
 
-// export function loadProposal(address, id) {
-//   return (dispatch) => {
-//     hett.getContractByName('Congress', address)
-//       .then(contract => (
-//         getProposal(contract, id)
-//       ))
-//       .then((info) => {
-//         dispatch(resultProposal(info))
-//       })
-//   }
-// }
+const isEvents = {};
+export function events(address) {
+  return (dispatch) => {
+    if (_.has(isEvents, address)) {
+      return;
+    }
+    isEvents[address] = true;
+    hett.getContractByName('Congress', address)
+      .then((contract) => {
+        contract.listen('ProposalAdded', (result) => {
+          dispatch(flashMessage(
+            'Proposal added #' + Number(result.proposal),
+            'info',
+            true
+          ))
+          dispatch(loadProposals(address));
+          dispatch(loadLogs(address));
+        })
+        contract.listen('Voted', (result) => {
+          dispatch(flashMessage(
+            'Voted #' + Number(result.proposal) + ' member ' + result.voter,
+            'info',
+            true
+          ))
+          dispatch(loadProposals(address));
+          dispatch(loadLogs(address));
+        })
+        contract.listen('ProposalTallied', (result) => {
+          dispatch(flashMessage(
+            'Proposal closed #' + Number(result.proposal),
+            'info',
+            true
+          ))
+          dispatch(loadProposals(address));
+          dispatch(loadLogs(address));
+        })
+        contract.listen('MembershipChanged', (result) => {
+          dispatch(flashMessage(
+            (result.member === true) ? 'Added member ' + result.member : 'Member removed ' + result.member,
+            'info',
+            true
+          ))
+        })
+        contract.listen('ChangeOfRules', () => {
+          dispatch(flashMessage(
+            'Voting rules changed',
+            'info',
+            true
+          ))
+        })
+      })
+  }
+}
 
 export function contractSend(abi, address, action, values) {
   return dispatch => (
@@ -246,12 +296,20 @@ export function addProposal(form) {
   return (dispatch, getState) => {
     const state = getState()
     const address = state.settings.fields.address
+    dispatch(formActions.start('addProposal'))
     let bytecode = ''
     if (_.has(form, 'action') && !_.isEmpty(form.action)) {
       const params = (_.has(form, 'params')) ? _.values(form.params) : []
       bytecode = getData(form.abi, form.action, params)
     }
-    dispatch(send(address, 'newProposal', [form.beneficiary, form.amount, form.jobDescription, bytecode]))
+    dispatch(contractSend('Congress', address, 'newProposal', [form.beneficiary, form.amount, form.jobDescription, bytecode]))
+      .then(() => {
+        dispatch(formActions.stop('addProposal'))
+        dispatch(formActions.success('addProposal', 'Создано новое голосование'))
+      })
+      .catch(() => {
+        dispatch(formActions.stop('addProposal'))
+      })
   }
 }
 
@@ -264,7 +322,6 @@ export function execute(id, form) {
     if (!_.isEmpty(form.action)) {
       bytecode = getData(form.abi, form.action, _.values(form.params))
     }
-    console.log([id, bytecode]);
     dispatch(contractSend('Congress', address, 'executeProposal', [id, bytecode]))
       .then(() => {
         dispatch(formActions.stop('execute' + id))
@@ -281,7 +338,6 @@ export function vote(id, form) {
     const state = getState()
     const address = state.settings.fields.address
     dispatch(formActions.start('vote' + id))
-    console.log([id, form.bool, form.comment]);
     dispatch(contractSend('Congress', address, 'vote', [id, form.bool, form.comment]))
       .then(() => {
         dispatch(formActions.stop('check' + id))
