@@ -6,13 +6,8 @@ import hett from 'hett'
 import Page from './page'
 import { timeConverter } from '../../../utils/helper'
 
-// {props.type === 'completed' ?
-// <Link to={'/congress/view/' + item.id}>{item.description}</Link>
-// :
-// <Link to={'/congress/vote/' + item.id}>{item.description}</Link>
-// }
 const List = props => (
-  <Page title={(props.type === 'completed') ? 'Completed Votings' : 'New Votings'}>
+  <Page title={props.titlePage}>
     <ul className="nav nav-pills pull-right">
       <li><Link to="/"><i className="fa fa-list" /> all</Link></li>
       <li><Link to="/congress/list/vote" className="text-danger"><i className="fa fa-paper-plane" /> проголосовать</Link></li>
@@ -80,7 +75,19 @@ function mapStateToProps(state, props) {
     }
   }
   proposals = _.reverse(proposals)
+
+  let titlePage = 'All proposals'
+  if (type === 'vote') {
+    titlePage = 'Проголосовать'
+  } else if (type === 'completed') {
+    titlePage = 'Исполнить'
+  } else if (type === 'pending') {
+    titlePage = 'В ожидании'
+  } else if (type === 'executed') {
+    titlePage = 'Executed'
+  }
   return {
+    titlePage,
     type,
     proposals
   }
