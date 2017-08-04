@@ -20,7 +20,7 @@ const List = props => (
         <tr>
           <th>#</th>
           <th>description</th>
-          <th>deadline</th>
+          <th>voting deadline</th>
         </tr>
       </thead>
       <tbody>
