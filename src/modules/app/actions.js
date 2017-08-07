@@ -5,6 +5,7 @@ import { LOAD, SET_LANGUAGE } from './actionTypes'
 import { load as loadSettings } from '../settings/actions';
 import { loadBalance, loadProposals, loadLogs, events } from '../congress/actions';
 import { loadAccounts } from '../addressBook/actions';
+import { load as loadMembers } from '../members/actions';
 import { save as addLog, load as loadMessagesLog } from '../logs/actions';
 
 export function setLoad(bool) {
@@ -53,6 +54,7 @@ export function load() {
             })
           dispatch(loadBalance(settings.address));
           dispatch(events(settings.address));
+          dispatch(loadMembers(settings.address));
         }
         dispatch(loadAccounts());
         dispatch(loadMessagesLog());

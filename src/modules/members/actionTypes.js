@@ -1,0 +1,1 @@
+export const SET_MEMBERS = 'MEMBERS_SET_MEMBERS'

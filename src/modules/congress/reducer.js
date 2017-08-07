@@ -1,11 +1,12 @@
 import _ from 'lodash'
-import { LOAD_LOGS, ADD_LOG, RESULT_PROPOSAL, SET_BALANCE, SET_BALANCE_USD, SET_PROPOSALS, SET_VOTED } from './actionTypes'
+import { LOAD_LOGS, ADD_LOG, RESULT_PROPOSAL, SET_BALANCE, SET_BALANCE_USD, SET_PROPOSALS, SET_OWNER, SET_VOTED } from './actionTypes'
 
 const initialState = {
   loadLogs: false,
   logs: [],
   balance: 0,
   balanceUsd: 0,
+  owner: '',
   proposals: {},
   proposal: {
     id: 0,
@@ -52,6 +53,10 @@ export default function congress(state = initialState, action) {
         proposals[item.id] = item
       })
       return { ...state, proposals }
+    }
+
+    case SET_OWNER: {
+      return { ...state, owner: action.payload }
     }
 
     case SET_VOTED: {

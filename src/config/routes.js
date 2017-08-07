@@ -3,6 +3,7 @@ import { Route, IndexRoute } from 'react-router'
 import App from '../shared/containers/app'
 import NotFound from '../shared/components/app/notFound'
 import * as Congress from '../routes/congress'
+import * as Members from '../routes/members'
 import * as AddressBook from '../routes/addressBook'
 import * as Settings from '../routes/settings'
 
@@ -19,6 +20,10 @@ export const routes = () =>
         <IndexRoute component={AddressBook.List} />
         <Route path="add" component={AddressBook.Form} />
         <Route path="edit/:address" component={AddressBook.Form} />
+      </Route>
+      <Route path="/members">
+        <IndexRoute component={Members.List} />
+        <Route path="add" component={Members.Form} />
       </Route>
       <Route path="/settings">
         <IndexRoute component={Settings.Main} />

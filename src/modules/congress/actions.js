@@ -3,8 +3,9 @@ import _ from 'lodash'
 import axios from 'axios'
 import hett from 'hett'
 import { actions as formActions } from 'vol4-form'
-import { LOAD_LOGS, ADD_LOG, RESULT_PROPOSAL, SET_BALANCE, SET_BALANCE_USD, SET_PROPOSALS, SET_VOTED } from './actionTypes'
+import { LOAD_LOGS, ADD_LOG, RESULT_PROPOSAL, SET_BALANCE, SET_BALANCE_USD, SET_PROPOSALS, SET_OWNER, SET_VOTED } from './actionTypes'
 import { flashMessage } from '../app/actions'
+import { load as loadMembers } from '../members/actions'
 // import { CONGRESS } from '../../config/config'
 
 export function addLog(info) {
@@ -39,6 +40,13 @@ export function setProposals(proposals) {
   return {
     type: SET_PROPOSALS,
     payload: proposals
+  }
+}
+
+export function setOwner(owner) {
+  return {
+    type: SET_OWNER,
+    payload: owner
   }
 }
 
@@ -182,6 +190,10 @@ export function loadProposals(congressAddress) {
     return hett.getContractByName('Congress', congressAddress)
       .then((contract) => {
         congress = contract;
+        return congress.call('owner')
+      })
+      .then((result) => {
+        dispatch(setOwner(result))
         return congress.call('minimumQuorum')
       })
       .then((result) => {
@@ -239,11 +251,13 @@ export function events(address) {
           dispatch(loadLogs(address));
         })
         contract.listen('MembershipChanged', (result) => {
+          console.log(result);
           dispatch(flashMessage(
-            (result.member === true) ? 'Added member ' + result.member : 'Member removed ' + result.member,
+            (result.isMember === true) ? 'Added member ' + result.member : 'Member removed ' + result.member,
             'info',
             true
           ))
+          dispatch(loadMembers(address));
         })
         contract.listen('ChangeOfRules', () => {
           dispatch(flashMessage(
