@@ -2,6 +2,7 @@ import React from 'react'
 import { Route, IndexRoute } from 'react-router'
 import App from '../shared/containers/app'
 import NotFound from '../shared/components/app/notFound'
+import * as Start from '../routes/start'
 import * as Congress from '../routes/congress'
 import * as Members from '../routes/members'
 import * as AddressBook from '../routes/addressBook'
@@ -28,6 +29,10 @@ export const routes = () =>
       <Route path="/settings">
         <IndexRoute component={Settings.Main} />
       </Route>
+    </Route>
+    <Route path="/start">
+      <IndexRoute component={Start.Join} />
+      <Route path="new" component={Start.New} />
     </Route>
     <Route path="*" component={NotFound} />
   </div>)

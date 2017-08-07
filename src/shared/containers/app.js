@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import Notifications from 'react-notification-system-redux';
@@ -8,7 +9,6 @@ import Header from '../components/app/header'
 import Footer from '../components/app/footer'
 import Sidebar from '../components/app/sidebar'
 import Load from '../components/app/load'
-import * as Start from '../../routes/start'
 import { load, flashMessage, setLanguage } from '../../modules/app/actions';
 import { read as readLogs, clearSave as clearLogs } from '../../modules/logs/actions';
 
@@ -23,7 +23,8 @@ class App extends Component {
     if (!this.props.isLoaded) {
       return <Load />
     } else if (this.props.settings.fields.address === '') {
-      return <Start.Main />
+      this.context.router.push('/start')
+      return null;
     }
     const style = {
       Containers: {
@@ -68,6 +69,10 @@ class App extends Component {
       />
     </div>)
   }
+}
+
+App.contextTypes = {
+  router: PropTypes.object.isRequired
 }
 
 function mapStateToProps(state) {

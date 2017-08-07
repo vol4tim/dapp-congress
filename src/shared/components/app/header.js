@@ -27,9 +27,9 @@ const Header = function Header(props) {
               <Link to="#" onClick={props.onReadLogs} className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 <span className="glyphicon glyphicon-bell text-danger" />
               </Link>
-              <ul className="dropdown-menu" style={{ width: 250 }}>
+              <ul className="dropdown-menu" style={{ width: 365 }}>
                 {props.logs.map((item, index) => (
-                  <li key={index} style={{ padding: '3px 20px' }}>{item}</li>
+                  <li key={index} style={{ padding: '3px 20px', borderBottom: '1px solid #eee' }}>{item}</li>
                 ))}
                 <li role="separator" className="divider" />
                 <li className="text-right" style={{ paddingRight: 5 }}>

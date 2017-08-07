@@ -1,16 +1,19 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { Link } from 'react-router'
 import { Form } from 'vol4-form'
 import Page from './page'
-import { Form as Fields } from '../components/form'
+import { Join as Fields } from '../components/form'
 import { saveField } from '../../../modules/settings/actions';
 
 const Container = props => (
-  <Page title="Set congress address">
+  <Page title="Join congress address">
     <Form id="saveField" {...props}>
       <Fields />
     </Form>
+    <hr />
+    <Link className="btn btn-default" to="/start/new">Create new congress</Link>
   </Page>
 )
 

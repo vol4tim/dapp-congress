@@ -30,29 +30,13 @@ const getUrlAbi = (contract) => {
   if (/builder/i.test(contract)) {
     isBuilder = true;
   }
-  const ipci = [
-    'BuilderAuditor',
-    'BuilderComplier',
-    'BuilderInsuranceHolder',
-    'BuilderIssuerLedger',
-    'BuilderOperator',
-    'Auditor',
-    'Complier',
-    'InsuranceHolder',
-  ]
   let repo = 'core'
   let version = '64e36c8ea43bb06ae8dd81a65af6d769b366f3c1';
-  if (_.indexOf(ipci, contract) >= 0) {
-    repo = 'DAO-IPCI'
-    version = '79c192ff18abe5c78f1d1ec607dee03b5641dbcc';
-  } else if (isBuilder) {
+  if (isBuilder) {
     repo = 'DAO-Factory'
     version = 'cb5b7c0ad9203e773b1db058540846e62a2931ff';
   }
   let url = 'https://raw.githubusercontent.com/airalab/' + repo + '/' + version + '/abi/'
-  if (isBuilder && repo === 'DAO-IPCI') {
-    url += 'builder/'
-  }
   url += contract + '.json'
   return url
 }
@@ -88,27 +72,21 @@ export class ProviderAddress {
   }
 
   getAddress(name) {
+    const network = hett.web3.version.network
+    if (_.has(this.addresses, network)) {
+      if (_.has(this.addresses[network], name)) {
+        return new Promise((resolve) => {
+          resolve(this.addresses[network][name]);
+        });
+      }
+    }
     if (_.has(this.addresses, name)) {
       return new Promise((resolve) => {
         resolve(this.addresses[name]);
       });
     }
-    return hett.getContractByName('Core', this.addresses.Factory)
-      .then(factory => factory.call('get', [name]))
+    return Promise.reject('Address not found')
   }
-}
-
-export function createModule(cotract, args) {
-  return cotract.call('buildingCostWei')
-    .then((result) => {
-      args.push(0) // client
-      return cotract.send('create', args, { value: result })
-    })
-}
-
-export function createModuleWatch(cotract) {
-  return cotract.watch('Builded')
-    .then(params => params.instance)
 }
 
 function isAddress(address, required = true) {

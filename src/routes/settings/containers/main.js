@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { Link } from 'react-router'
 import _ from 'lodash'
 import { Form } from 'vol4-form'
 import Page from './page'
@@ -12,6 +13,8 @@ const Container = props => (
     <Form id="settings" {...props} onSubmit={props.onSubmit}>
       <Fields />
     </Form>
+    <hr />
+    <Link className="btn btn-default" to="/start/new">Create new congress</Link>
   </Page>
 )
 

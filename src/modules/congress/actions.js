@@ -5,8 +5,8 @@ import hett from 'hett'
 import { actions as formActions } from 'vol4-form'
 import { LOAD_LOGS, ADD_LOG, RESULT_PROPOSAL, SET_BALANCE, SET_BALANCE_USD, SET_PROPOSALS, SET_OWNER, SET_VOTED } from './actionTypes'
 import { flashMessage } from '../app/actions'
+import { saveField } from '../settings/actions'
 import { load as loadMembers } from '../members/actions'
-// import { CONGRESS } from '../../config/config'
 
 export function addLog(info) {
   return {
@@ -270,10 +270,10 @@ export function events(address) {
   }
 }
 
-export function contractSend(abi, address, action, values) {
+export function contractSend(abi, address, action, values, args = {}) {
   return dispatch => (
     hett.getContractByName(abi, address)
-      .then(contract => contract.send(action, values))
+      .then(contract => contract.send(action, values, args))
       .then((txId) => {
         dispatch(flashMessage('txId: ' + txId))
         return hett.watcher.addTx(txId)
@@ -339,7 +339,7 @@ export function execute(id, form) {
     dispatch(contractSend('Congress', address, 'executeProposal', [id, bytecode]))
       .then(() => {
         dispatch(formActions.stop('execute' + id))
-        dispatch(formActions.success('check' + id, 'Исполнено'))
+        dispatch(formActions.success('execute' + id, 'Исполнено'))
       })
       .catch(() => {
         dispatch(formActions.stop('execute' + id))
@@ -354,8 +354,8 @@ export function vote(id, form) {
     dispatch(formActions.start('vote' + id))
     dispatch(contractSend('Congress', address, 'vote', [id, form.bool, form.comment]))
       .then(() => {
-        dispatch(formActions.stop('check' + id))
-        dispatch(formActions.success('check' + id, 'Голос принят'))
+        dispatch(formActions.stop('vote' + id))
+        dispatch(formActions.success('vote' + id, 'Голос принят'))
       })
       .catch(() => {
         dispatch(formActions.stop('vote' + id))
@@ -384,6 +384,36 @@ export function checkProposalCode(id, form) {
         } else {
           dispatch(formActions.error('check' + id, 'False'))
         }
+      })
+  }
+}
+
+export function createCongress(form) {
+  return (dispatch) => {
+    let address;
+    dispatch(formActions.start('newCongress'))
+    hett.getAddressByName('BuilderCongress')
+      .then((result) => {
+        address = result
+        return hett.getContractByName('BuilderCongress', address)
+      })
+      .then((contract) => {
+        contract
+          .watch('Builded')
+          .then((params) => {
+            dispatch(saveField('address', params.instance))
+            dispatch(formActions.success('newCongress', 'New congress address: ' + params.instance))
+          })
+        return contract.call('buildingCostWei')
+      })
+      .then(result => (
+        dispatch(contractSend('BuilderCongress', address, 'create', [..._.values(form), 0], { value: result }))
+      ))
+      .then(() => {
+        dispatch(formActions.stop('newCongress'))
+      })
+      .catch(() => {
+        dispatch(formActions.stop('newCongress'))
       })
   }
 }
