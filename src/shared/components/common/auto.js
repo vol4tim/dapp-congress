@@ -1,121 +1,90 @@
-/* eslint react/jsx-boolean-value: 0 */
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import _ from 'lodash'
-import Autosuggest from 'react-autosuggest'
-import { translate } from 'react-i18next'
+import Autocomplete from 'react-autocomplete'
 
-function escapeRegexCharacters(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+export function sortStates(a, b, value) {
+  const aLower = a.name
+  const bLower = b.name
+  const valueLower = value
+  const queryPosA = aLower.indexOf(valueLower)
+  const queryPosB = bLower.indexOf(valueLower)
+  if (queryPosA !== queryPosB) {
+    return queryPosA - queryPosB
+  }
+  return aLower < bLower ? -1 : 1
 }
-function getSuggestionValue(suggestion) {
-  return suggestion.address;
-}
-function renderSuggestion(suggestion) {
+export function matchStateToTerm(state, value) {
   return (
-    <span>
-      {suggestion.name}<br />
-      <small>{suggestion.address}</small>
-    </span>
-  );
+    state.name.indexOf(value) !== -1 ||
+    state.value.indexOf(value) !== -1
+  )
 }
-function renderSectionTitle(section) {
-  return (
-    <strong>{section.name}</strong>
-  );
+export const styles = {
+  item: {
+    padding: '5px 15px',
+    cursor: 'default',
+    borderBottom: '1px solid #eee'
+  },
+
+  highlightedItem: {
+    color: 'white',
+    background: 'hsl(200, 50%, 50%)',
+    padding: '5px 15px',
+    cursor: 'default',
+    borderBottom: '1px solid #eee'
+  },
+
+  menu: {
+    border: 'solid 1px #ccc'
+  }
 }
-function getSectionSuggestions(section) {
-  return section.modules;
-}
 
-class Container extends Component {
-  constructor() {
-    super();
-
-    this.state = {
-      value: '',
-      suggestions: []
-    };
-  }
-
-  onSuggestionsFetchRequested({ value }) {
-    this.getSuggestions(value);
-  }
-
-  onSuggestionsClearRequested() {
-    this.setState({
-      suggestions: []
-    });
-  }
-
-  getSuggestions(value) {
-    const escapedValue = escapeRegexCharacters(value.trim());
-    let suggestions = [];
-    if (escapedValue !== '') {
-      const regex = new RegExp('' + escapedValue, 'i');
-      suggestions = _.map(this.props.items, section => (
-        {
-          name: section.name,
-          modules: _.filter(
-            section.modules,
-            module => (regex.test(module.address) || regex.test(module.name))
-          )
-        }
-      ))
-        .filter(section => section.modules.length > 0);
+const Auto = props => (
+  <Autocomplete
+    {...props.input}
+    items={props.items}
+    wrapperStyle={{}}
+    inputProps={{ id: 'states-autocomplete', className: 'form-control', name: props.input.name }}
+    getItemValue={item => item.value}
+    shouldItemRender={matchStateToTerm}
+    sortItems={sortStates}
+    onSelect={
+      value => props.input.onChange({ target: { name: props.input.name, value } })
     }
-    this.setState({
-      suggestions
-    });
-  }
-
-  render() {
-    const { field } = this.props;
-    const { value, suggestions } = this.state;
-    const inputProps = {
-      placeholder: this.props.t('autocompletePlaceholder'),
-      value,
-      ...field,
-      onChange: (evt, { newValue }) => {
-        field.onChange(newValue);
-      },
-    };
-    const theme = {
-      container: 'react-autosuggest__container',
-      containerOpen: 'react-autosuggest__container--open',
-      input: 'form-control',
-      suggestionsContainer: 'react-autosuggest__suggestions-container',
-      suggestionsList: 'react-autosuggest__suggestions-list',
-      suggestion: 'react-autosuggest__suggestion',
-      suggestionFocused: 'react-autosuggest__suggestion--focused',
-      sectionContainer: 'react-autosuggest__section-container',
-      sectionTitle: 'react-autosuggest__section-title'
-    }
-
-    return (<div className="react-autosuggest__container">
-      <Autosuggest
-        multiSection={true}
-        suggestions={suggestions}
-        onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-        onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-        getSuggestionValue={getSuggestionValue}
-        renderSuggestion={renderSuggestion}
-        renderSectionTitle={renderSectionTitle}
-        getSectionSuggestions={getSectionSuggestions}
-        inputProps={inputProps}
-        theme={theme}
-      />
-    </div>)
-  }
-}
+    renderItem={(item, isHighlighted) => (
+      <div
+        style={isHighlighted ? styles.highlightedItem : styles.item}
+        key={item.value}
+      >
+        <b>{item.name}</b><br />
+        <small>{item.value}</small>
+      </div>
+    )}
+  />
+)
 
 function mapStateToProps(state, props) {
-  const items = state.dao.blocks
+  let items;
+  if (_.has(props, 'items')) {
+    items = props.items
+  } else {
+    items = _.map(state.addressBook.items, item => (
+      {
+        value: item.address,
+        name: item.name
+      }
+    ))
+    items = _.merge(items, _.map(state.members.items, item => (
+      {
+        value: item.address,
+        name: item.name
+      }
+    )))
+  }
   return {
-    field: props.field,
-    placeholder: props.placeholder,
     items
   }
 }
 
-export default connect(mapStateToProps)(translate()(Container))
+export default connect(mapStateToProps)(Auto)

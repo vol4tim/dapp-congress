@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
+import Auto from '../../../../shared/components/common/auto'
 
 class Main extends Component {
   constructor(props) {
@@ -95,7 +96,13 @@ class Main extends Component {
         <form onSubmit={this.props.handleSubmit}>
           <div className={(this.props.fields.beneficiary.error) ? 'form-group has-error' : 'form-group'}>
             <label>beneficiary</label>
-            <input type="text" value={this.props.fields.beneficiary.value} onChange={this.props.handleChange} name="beneficiary" className="form-control" />
+            <Auto
+              input={{
+                value: this.props.fields.beneficiary.value,
+                onChange: this.props.handleChange,
+                name: 'beneficiary'
+              }}
+            />
             {this.props.fields.beneficiary.error &&
               <span className="help-block">{this.props.fields.beneficiary.error}</span>
             }
