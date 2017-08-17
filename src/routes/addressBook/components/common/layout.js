@@ -1,12 +1,12 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
 const Layout = props => (
   <div>
     <h2 style={{ float: 'left', marginTop: 0 }}>{props.title}</h2>
     <ul className="nav nav-pills pull-right">
-      <li><Link to="/address-book" className="active"><i className="fa fa-list" /> List</Link></li>
-      <li><Link to="/address-book/add"><i className="fa fa-plus" /> Add</Link></li>
+      <li><NavLink to="/address-book" exact activeClassName="activeLink"><i className="fa fa-list" /> List</NavLink></li>
+      <li><NavLink to="/address-book/add" activeClassName="activeLink"><i className="fa fa-plus" /> Add</NavLink></li>
     </ul>
     <hr style={{ clear: 'both' }} />
     <div>

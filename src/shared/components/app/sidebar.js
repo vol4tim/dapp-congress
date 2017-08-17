@@ -1,13 +1,13 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
 export default function () {
   return (
     <ul className="nav nav-pills nav-stacked">
-      <li><Link to="/congress"><i className="fa fa-university" /> Congress</Link></li>
-      <li><Link to="/members"><i className="fa fa-users" /> Members</Link></li>
-      <li><Link to="/address-book"><i className="fa fa-address-card" /> Address</Link></li>
-      <li><Link to="/settings"><i className="fa fa-cog" /> Settings</Link></li>
+      <li><NavLink to="/congress" activeClassName="activeLink"><i className="fa fa-university" /> Congress</NavLink></li>
+      <li><NavLink to="/members" activeClassName="activeLink"><i className="fa fa-users" /> Members</NavLink></li>
+      <li><NavLink to="/address-book" activeClassName="activeLink"><i className="fa fa-address-card" /> Address</NavLink></li>
+      <li><NavLink to="/settings" activeClassName="activeLink"><i className="fa fa-cog" /> Settings</NavLink></li>
     </ul>
   )
 }
