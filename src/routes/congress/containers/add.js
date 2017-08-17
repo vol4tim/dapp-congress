@@ -2,16 +2,17 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Form } from 'vol4-form'
-import Page from './page'
+import { Layout } from '../components/common'
 import AddProposal from '../components/addProposal';
 import { addProposal } from '../../../modules/congress/actions';
 
 const Add = props => (
-  <Page title="Add voting">
+  <Layout title="Add voting">
+    {props.children}
     <Form {...props} id={'addProposal'}>
       <AddProposal />
     </Form>
-  </Page>
+  </Layout>
 )
 
 function mapStateToProps() {

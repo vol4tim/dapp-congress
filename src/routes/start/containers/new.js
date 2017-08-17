@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import hett from 'hett'
 import { Form } from 'vol4-form'
-import Page from './page'
+import { Layout } from '../components/common'
 import { New as Fields } from '../components/form'
 import { createCongress } from '../../../modules/congress/actions';
 
@@ -27,14 +27,14 @@ class Container extends Component {
 
   render() {
     return (
-      <Page title="Create new congress">
+      <Layout title="Create new congress">
         <Form id="newCongress" {...this.props}>
           <Fields />
         </Form>
         <p>Building cost: <b>{this.state.cost} ETH</b></p>
         <hr />
         <Link className="btn btn-default" to="/start">Join an existing congress</Link>
-      </Page>
+      </Layout>
     )
   }
 }

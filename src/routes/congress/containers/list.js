@@ -1,13 +1,13 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import _ from 'lodash'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import hett from 'hett'
-import Page from './page'
+import { Layout } from '../components/common'
 import { timeConverter } from '../../../utils/helper'
 
 const List = props => (
-  <Page title={props.titlePage}>
+  <Layout title={props.titlePage}>
     <ul className="nav nav-pills pull-right">
       <li><Link to="/"><i className="fa fa-list" /> all</Link></li>
       <li><Link to="/congress/list/vote" className="text-danger"><i className="fa fa-paper-plane" /> проголосовать</Link></li>
@@ -15,6 +15,7 @@ const List = props => (
       <li><Link to="/congress/list/pending" className="text-muted"><i className="fa fa-balance-scale" /> в ожидании</Link></li>
       <li><Link to="/congress/list/executed" className="text-success"><i className="fa fa-check" /> executed</Link></li>
     </ul>
+    {props.children}
     <table className="table table-striped">
       <thead>
         <tr>
@@ -48,11 +49,11 @@ const List = props => (
         })}
       </tbody>
     </table>
-  </Page>
+  </Layout>
 )
 
 function mapStateToProps(state, props) {
-  const type = (_.has(props.params, 'type')) ? props.params.type : 'all'
+  const type = (_.has(props.match.params, 'type')) ? props.match.params.type : 'all'
   let proposals = _.values(state.congress.proposals)
   if (type !== 'all') {
     if (type === 'vote') {

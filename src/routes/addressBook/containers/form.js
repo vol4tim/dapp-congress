@@ -3,12 +3,12 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import _ from 'lodash'
 import { Form } from 'vol4-form'
-import Page from './page'
+import { Layout } from '../components/common'
 import { Add, Edit } from '../components/form';
 import { save } from '../../../modules/addressBook/actions';
 
 const Container = props => (
-  <Page title={(props.isNew) ? 'Add address' : 'Edit address'}>
+  <Layout title={(props.isNew) ? 'Add address' : 'Edit address'}>
     <Form id="addressBook" {...props} onSubmit={props.onSubmit}>
       {props.isNew ?
         <Add />
@@ -16,7 +16,7 @@ const Container = props => (
         <Edit />
       }
     </Form>
-  </Page>
+  </Layout>
 )
 
 function mapStateToProps(state, props) {
@@ -31,9 +31,9 @@ function mapStateToProps(state, props) {
     }
   }
   let isNew = true;
-  if (_.has(state.addressBook.items, props.params.address)) {
+  if (_.has(state.addressBook.items, props.match.params.address)) {
     isNew = false;
-    const item = state.addressBook.items[props.params.address]
+    const item = state.addressBook.items[props.match.params.address]
     fields.address.value = item.address
     fields.name.value = item.name
   }

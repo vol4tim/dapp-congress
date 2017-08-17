@@ -1,19 +1,14 @@
 import React from 'react'
+import { Switch, Route, Redirect } from 'react-router-dom'
+import * as Pages from '../index'
 
-const Page = props => (
-  <div className="container">
-    <div className="row">
-      <div className="col-md-6 col-md-offset-3" style={{ marginTop: 50 }}>
-        <div className="panel panel-default">
-          <div className="panel-heading" style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 20 }}>
-            <i className="fa fa-university" /> {props.title}
-          </div>
-          <div className="panel-body" style={{ textAlign: 'center' }}>
-            {props.children}
-          </div>
-        </div>
-      </div>
-    </div>
+const Page = ({ match }) => (
+  <div>
+    <Switch>
+      <Route exact path={match.path} component={Pages.Join} />
+      <Route path={`${match.path}/new`} component={Pages.New} />
+      <Redirect to={`${match.url}`} />
+    </Switch>
   </div>
 )
 

@@ -2,16 +2,16 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Form } from 'vol4-form'
-import Page from './page'
+import { Layout } from '../components/common'
 import { Add } from '../components/form';
 import { addMember } from '../../../modules/members/actions';
 
 const Container = props => (
-  <Page title="Add member">
+  <Layout title="Add member">
     <Form id="addMember" {...props} onSubmit={props.onSubmit}>
       <Add />
     </Form>
-  </Page>
+  </Layout>
 )
 
 function mapStateToProps() {

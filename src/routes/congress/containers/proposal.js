@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux'
 import _ from 'lodash'
 import hett from 'hett'
 import { Form } from 'vol4-form'
-import Page from './page'
+import { Layout } from '../components/common'
 import { Info, Votes, Vote, Execute } from '../components/proposal'
 import { vote, execute } from '../../../modules/congress/actions';
 
@@ -18,7 +18,7 @@ const MyVote = (props) => {
 }
 
 const Proposal = props => (
-  <Page title={'Proposal #' + props.proposal.id}>
+  <Layout title={'Proposal #' + props.proposal.id}>
     <Info proposal={props.proposal} />
     <Votes ok={props.ok} no={props.no} />
     {props.proposal.type !== 'executed' &&
@@ -29,7 +29,7 @@ const Proposal = props => (
         <Execute />
       </Form>
     }
-  </Page>
+  </Layout>
 )
 
 function mapStateToProps(state, props) {
@@ -37,8 +37,8 @@ function mapStateToProps(state, props) {
   let ok = 0
   let no = 0
   let myVote = false
-  if (_.has(state.congress.proposals, props.params.id)) {
-    proposal = state.congress.proposals[props.params.id]
+  if (_.has(state.congress.proposals, props.match.params.id)) {
+    proposal = state.congress.proposals[props.match.params.id]
     if (proposal.currentResult < 0) {
       ok = proposal.currentResult + proposal.numberOfVotes
       no = proposal.numberOfVotes - ok
@@ -104,8 +104,8 @@ function mapDispatchToProps(dispatch, props) {
     execute,
   }, dispatch)
   return {
-    onSubmitVote: form => actions.vote(props.params.id, form),
-    onSubmitExecute: form => actions.execute(props.params.id, form)
+    onSubmitVote: form => actions.vote(props.match.params.id, form),
+    onSubmitExecute: form => actions.execute(props.match.params.id, form)
   }
 }
 

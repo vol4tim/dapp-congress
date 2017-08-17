@@ -1,18 +1,17 @@
 import React from 'react'
-import { Link } from 'react-router'
+import { Switch, Route, Redirect } from 'react-router-dom'
+import Layout from '../../../shared/containers/layout'
+import * as Pages from '../index'
 
-const Page = props => (
-  <div>
-    <h2 style={{ float: 'left', marginTop: 0 }}>{props.title}</h2>
-    <ul className="nav nav-pills pull-right">
-      <li><Link to="/address-book" activeClassName="active"><i className="fa fa-list" /> List</Link></li>
-      <li><Link to="/address-book/add"><i className="fa fa-plus" /> Add</Link></li>
-    </ul>
-    <hr style={{ clear: 'both' }} />
-    <div>
-      {props.children}
-    </div>
-  </div>
+const Page = ({ match }) => (
+  <Layout>
+    <Switch>
+      <Route exact path={match.path} component={Pages.List} />
+      <Route path={`${match.path}/add`} component={Pages.Form} />
+      <Route path={`${match.path}/edit/:address`} component={Pages.Form} />
+      <Redirect to={`${match.url}`} />
+    </Switch>
+  </Layout>
 )
 
 export default Page

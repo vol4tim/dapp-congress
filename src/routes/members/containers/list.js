@@ -3,11 +3,11 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import _ from 'lodash'
 import hett from 'hett'
-import Page from './page'
+import { Layout } from '../components/common'
 import { removeMember } from '../../../modules/members/actions';
 
 const List = props => (
-  <Page title="Members">
+  <Layout title="Members">
     <table className="table table-striped">
       <thead>
         <tr>
@@ -35,7 +35,7 @@ const List = props => (
         )}
       </tbody>
     </table>
-  </Page>
+  </Layout>
 )
 
 function mapStateToProps(state) {

@@ -1,13 +1,13 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import _ from 'lodash'
-import Page from './page'
+import { Layout } from '../components/common'
 import { removeAccount } from '../../../modules/addressBook/actions';
 
 const List = props => (
-  <Page title="Address book">
+  <Layout title="Address book">
     <table className="table table-striped">
       <thead>
         <tr>
@@ -32,7 +32,7 @@ const List = props => (
         )}
       </tbody>
     </table>
-  </Page>
+  </Layout>
 )
 
 function mapStateToProps(state) {

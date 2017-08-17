@@ -2,6 +2,7 @@
 import React from 'react'
 import { render } from 'react-dom'
 import Plugin from './shared/components/app/plugin'
+import Load from './shared/components/app/load'
 import './index.html';
 
 const startApp = () => {
@@ -9,7 +10,7 @@ const startApp = () => {
 }
 const notWeb3 = () => {
   render(
-    <div className="container" id="maincontainer">
+    <div className="container">
       <Plugin />
     </div>,
     document.getElementById('root')
@@ -17,16 +18,17 @@ const notWeb3 = () => {
 }
 const notAccounts = () => {
   render(
-    <div className="container" id="maincontainer">
-      <p>not accounts</p>
+    <div className="container">
+      <p>[ENG] Please unlock metamask account and try to refresh browser page.</p>
+      <p>[RUS] Пожалуйста, разблокируйте ваш metamask аккаунт или обновите страницу в браузере.</p>
     </div>,
     document.getElementById('root')
   )
 }
 const loader = () => {
   render(
-    <div className="container" id="maincontainer">
-      <p>...</p>
+    <div className="container">
+      <Load />
     </div>,
     document.getElementById('root')
   )
