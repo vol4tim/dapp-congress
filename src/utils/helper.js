@@ -100,26 +100,35 @@ function isAddress(address, required = true) {
   return false;
 }
 
-export const validate = (values, props) => {
-  const errors = {};
-  _.each(props.fields, (item) => {
-    if (item.required && !values[item.name]) {
-      errors[item.name] = 'required'
-    } else {
-      let isError
-      switch (item.validation) {
-        case 'address':
-          isError = isAddress(values[item.name], item.required) ? false : 'bad address'
-          break;
-        case 'uint':
-          isError = _.isNumber(values[item.name] * 1) && !_.isNaN(values[item.name] * 1) ? false : 'no number'
-          break;
-        default:
-          isError = false
-      }
-      if (isError) {
-        errors[item.name] = isError
-      }
+export const validate = (fields, form) => {
+  const errors = {}
+  _.forEach(fields, (field, name) => {
+    if (_.has(field, 'validator')) {
+      const validators = field.validator
+      const value = form[name]
+      _.forEach(validators, (validator) => {
+        let isError = false
+        switch (validator) {
+          case 'required':
+            isError = value !== '' ? false : 'обязательное поле'
+            break;
+          case 'address':
+            isError = isAddress(value) ? false : 'не верный адрес'
+            break;
+          case 'uint':
+          case 'uint8':
+          case 'uint256':
+            isError = _.isNumber(value * 1) && !_.isNaN(value * 1) ? false : 'должно быть число'
+            break;
+          default:
+            isError = false
+        }
+        if (isError) {
+          errors[name] = isError
+          return false
+        }
+        return true
+      })
     }
   })
   return errors
