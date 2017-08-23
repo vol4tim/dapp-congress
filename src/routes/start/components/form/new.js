@@ -1,8 +1,17 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-const Form = props => (
-  <form onSubmit={props.handleSubmit} className="text-left">
+const redirect = (history) => {
+  setTimeout(() => {
+    history.push('/congress')
+  }, 3000)
+}
+
+const Form = (props) => {
+  if (props.form.success) {
+    redirect(props.history);
+  }
+  return <form onSubmit={props.handleSubmit} className="text-left">
     <div className={(props.fields.quorum.error) ? 'form-group has-error' : 'form-group'}>
       <label>minimumQuorumForProposals</label>
       <input value={props.fields.quorum.value} onChange={props.handleChange} name="quorum" type="text" className="form-control" />
@@ -43,6 +52,6 @@ const Form = props => (
       </div>
     }
   </form>
-)
+}
 
 export default Form
