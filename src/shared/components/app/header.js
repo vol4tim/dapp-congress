@@ -1,5 +1,49 @@
-import React from 'react'
+import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+
+class Notif extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false
+    };
+    this.handleOpen = this.handleOpen.bind(this);
+  }
+
+  handleOpen() {
+    this.setState({ open: !this.state.open });
+    this.props.onReadLogs();
+  }
+
+  render() {
+    if (this.props.logs.length === 0) {
+      return <li className="navbar-text"><span className="glyphicon glyphicon-bell" /></li>
+    }
+    let css = 'dropdown';
+    if (this.state.open) {
+      css += ' open'
+    }
+    if (!this.props.isReadLogs) {
+      css += ' bg-danger'
+    }
+    return (
+      <li className={css}>
+        <button to="#" onClick={this.handleOpen} className="btn btn-link" style={{ padding: 14 }}>
+          <span className="glyphicon glyphicon-bell text-danger" />
+        </button>
+        <ul className="dropdown-menu" style={{ width: 365 }}>
+          {this.props.logs.map((item, index) => (
+            <li key={index} style={{ padding: '3px 20px', borderBottom: '1px solid #eee' }}>{item}</li>
+          ))}
+          <li role="separator" className="divider" />
+          <li className="text-right" style={{ paddingRight: 5 }}>
+            <button className="btn btn-warning btn-xs" onClick={this.props.onClearLogs}><i className="fa fa-trash-o" /> Clear</button>
+          </li>
+        </ul>
+      </li>
+    )
+  }
+}
 
 const Header = function Header(props) {
   return (
@@ -23,20 +67,7 @@ const Header = function Header(props) {
         <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul className="nav navbar-nav navbar-right">
             <li className="navbar-text">Balance: <b>{props.balance} ETH ({props.balanceUsd} USD)</b></li>
-            <li className={(props.isReadLogs) ? 'dropdown' : 'dropdown bg-danger'}>
-              <Link to="#" onClick={props.onReadLogs} className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                <span className="glyphicon glyphicon-bell text-danger" />
-              </Link>
-              <ul className="dropdown-menu" style={{ width: 365 }}>
-                {props.logs.map((item, index) => (
-                  <li key={index} style={{ padding: '3px 20px', borderBottom: '1px solid #eee' }}>{item}</li>
-                ))}
-                <li role="separator" className="divider" />
-                <li className="text-right" style={{ paddingRight: 5 }}>
-                  <button className="btn btn-warning btn-xs" onClick={props.onClearLogs}><i className="fa fa-trash-o" /> Clear</button>
-                </li>
-              </ul>
-            </li>
+            <Notif {...props} />
           </ul>
         </div>
       </div>
