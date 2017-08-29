@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import { timeConverter } from '../../../utils/helper'
 
 class Notif extends Component {
   constructor(props) {
@@ -20,20 +21,35 @@ class Notif extends Component {
       return <li className="navbar-text"><span className="glyphicon glyphicon-bell" /></li>
     }
     let css = 'dropdown';
+    let cssBtn = { padding: 14, outline: 0 };
     if (this.state.open) {
       css += ' open'
+      cssBtn = { ...cssBtn, color: '#555', backgroundColor: '#e7e7e7' };
     }
     if (!this.props.isReadLogs) {
       css += ' bg-danger'
     }
+
+    const cssLi = { background: '#f7f7f7', padding: 5, margin: '6px 6px 0', fontSize: 11 }
+    const cssTitle = { fontSize: 12 }
+    const cssTime = { fontSize: 11, fontStyle: 'italic', fontWeight: 'bold', position: 'absolute', right: 12 }
+
     return (
       <li className={css}>
-        <button to="#" onClick={this.handleOpen} className="btn btn-link" style={{ padding: 14 }}>
+        <button to="#" onClick={this.handleOpen} className="btn btn-link" style={cssBtn}>
           <span className="glyphicon glyphicon-bell text-danger" />
         </button>
         <ul className="dropdown-menu" style={{ width: 365 }}>
           {this.props.logs.map((item, index) => (
-            <li key={index} style={{ padding: '3px 20px', borderBottom: '1px solid #eee' }}>{item}</li>
+            <li key={index} style={cssLi}>
+              <div style={{ height: 20 }}>
+                <span style={cssTitle}>{item.title}</span>
+                <span style={cssTime}>{timeConverter(item.time)}</span>
+              </div>
+              <div>
+                {item.message}
+              </div>
+            </li>
           ))}
           <li role="separator" className="divider" />
           <li className="text-right" style={{ paddingRight: 5 }}>

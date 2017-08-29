@@ -29,7 +29,7 @@ export function flashMessage(message, type = 'info', isSave = false) {
       dispatch(Notifications.info(notificationOpts))
     }
     if (isSave) {
-      dispatch(addLog(message))
+      dispatch(addLog('', message))
     }
   }
 }

@@ -3,10 +3,14 @@ import store from 'store'
 import _ from 'lodash'
 import { ADD, READ, CLEAR, SET_ALL } from './actionTypes'
 
-export function add(message) {
+export function add(title, message, time) {
   return {
     type: ADD,
-    payload: message
+    payload: {
+      title,
+      message,
+      time
+    }
   }
 }
 
@@ -29,15 +33,20 @@ export function setAll(messages) {
   }
 }
 
-export function save(message) {
+export function save(title, message) {
   return (dispatch) => {
     let messages = store.get('messagesLog')
     if (_.isUndefined(messages)) {
       messages = []
     }
-    messages.push(message)
+    const time = Date.now() / 1000
+    messages.push({
+      title,
+      message,
+      time
+    })
     store.set('messagesLog', messages)
-    dispatch(add(message))
+    dispatch(add(title, message, time))
   }
 }
 
