@@ -6,6 +6,7 @@ import { Switch, Route, Redirect } from 'react-router-dom'
 import * as Congress from '../../routes/congress'
 import * as Members from '../../routes/members'
 import * as AddressBook from '../../routes/addressBook'
+import * as Token from '../../routes/token'
 import * as Factory from '../../routes/factory'
 import * as Settings from '../../routes/settings'
 import NotFound from '../components/app/notFound'
@@ -32,6 +33,7 @@ class Bootstrap extends Component {
             <Redirect exact path="/" to="/congress" />
             <Route path="/congress" component={Congress.Page} />
             <Route path="/address-book" component={AddressBook.Page} />
+            <Route path="/token" component={Token.Page} />
             <Route path="/factory" component={Factory.Page} />
             <Route path="/members" component={Members.Page} />
             <Route path="/settings" component={Settings.Page} />
