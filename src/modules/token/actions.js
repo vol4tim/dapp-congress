@@ -4,6 +4,7 @@ import _ from 'lodash'
 import hett from 'hett'
 import { actions as actionsForm } from 'vol4-form'
 import { IS_LOAD, ADD, SET_INFO, REMOVE } from './actionTypes'
+import { flashMessage } from '../app/actions'
 import { formatDecimals } from '../../utils/helper'
 
 export function add(item) {
@@ -160,6 +161,45 @@ export function getConstant(idForm, address, abiName, func, form) {
     contract.call(func, _.values(form))
       .then((result) => {
         dispatch(actionsForm.success(idForm, formatResult(token, func, result)));
+        dispatch(actionsForm.stop(idForm))
+      })
+      .catch(() => {
+        dispatch(actionsForm.stop(idForm))
+      })
+  }
+}
+
+export function contractSend(abi, address, action, values, args = {}) {
+  return dispatch => (
+    hett.getContractByName(abi, address)
+      .then(contract => contract.send(action, values, args))
+      .then((txId) => {
+        dispatch(flashMessage('txId: ' + txId))
+        return hett.watcher.addTx(txId)
+      })
+      .then((transaction) => {
+        dispatch(flashMessage('blockNumber: ' + transaction.blockNumber))
+        return transaction;
+      })
+      .catch((e) => {
+        console.log(e);
+        return Promise.reject();
+      })
+  )
+}
+
+export function send(idForm, address, abiName, func, form) {
+  return (dispatch) => {
+    dispatch(actionsForm.start(idForm))
+    let data = _.values(form)
+    const args = {}
+    if (_.has(form.payable)) {
+      args.value = form.payable
+      data = _.values(_.unset(form, 'payable'))
+    }
+    dispatch(contractSend(abiName, address, func, data, args))
+      .then((transaction) => {
+        dispatch(actionsForm.success(idForm, transaction.hash));
         dispatch(actionsForm.stop(idForm))
       })
       .catch(() => {

@@ -1,5 +1,6 @@
 import React from 'react'
 import _ from 'lodash'
+import styles from './style.css'
 
 const Form = props => (
   <div className="panel panel-default">
@@ -17,8 +18,9 @@ const Form = props => (
         )}
         <button type="submit" className="btn btn-primary" disabled={props.form.submitting}>Send</button>
         {props.form.success &&
-          <div style={{ marginTop: 20 }}>
-            <div className="alert alert-success">{props.form.success}</div>
+          <div className={styles['bs-callout'] + ' ' + styles['bs-callout-info']}>
+            <h4>Result</h4>
+            <p>{props.form.success}</p>
           </div>
         }
       </form>

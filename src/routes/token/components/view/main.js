@@ -6,7 +6,6 @@ const Main = props => (
     <p>Owner: <b>{props.info.owner}</b></p>
     <p>Total Supply: <b>{props.info.totalSupply} {props.info.symbol}</b></p>
     <p>Balance: <b>{props.info.myBalance} {props.info.symbol}</b></p>
-    <hr />
   </div>
 )
 
