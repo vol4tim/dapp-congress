@@ -101,7 +101,7 @@ export function loadCreateFields(idBuilder) {
         const func = _.find(abi, { name: 'create' });
         _.forEach(func.inputs, (item) => {
           fields[item.name] = {
-            value: '',
+            value: (item.name === '_client' && item.type === 'address') ? hett.web3h.coinbase() : '',
             type: 'text',
             placeholder: item.type,
             validator: ['required', item.type],
