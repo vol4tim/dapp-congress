@@ -102,7 +102,7 @@ export function loadCreateFields(idBuilder) {
         _.forEach(func.inputs, (item) => {
           fields[item.name] = {
             value: (item.name === '_client' && item.type === 'address') ? hett.web3h.coinbase() : '',
-            type: 'text',
+            type: (item.type === 'address') ? 'address' : 'text',
             placeholder: item.type,
             validator: ['required', item.type],
           }

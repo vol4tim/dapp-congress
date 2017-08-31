@@ -1,10 +1,18 @@
 import React from 'react'
+import Auto from '../../../../shared/components/common/auto'
 
 const Form = props => (
   <form onSubmit={props.handleSubmit}>
     <div className={(props.fields.address.error) ? 'form-group has-error' : 'form-group'}>
       <label>address</label>
-      <input value={props.fields.address.value} onChange={props.handleChange} name="address" type="text" className="form-control" />
+      <Auto
+        input={{
+          value: props.fields.address.value,
+          name: props.fields.address.name,
+          placeholder: props.fields.address.placeholder,
+          onChange: props.handleChange
+        }}
+      />
       {props.fields.address.error &&
         <span className="help-block">{props.fields.address.error}</span>
       }

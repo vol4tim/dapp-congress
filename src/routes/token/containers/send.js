@@ -61,7 +61,7 @@ function mapStateToProps(state, props) {
     _.forEach(info.inputs, (field) => {
       form.fields[field.name] = {
         value: '',
-        type: 'text',
+        type: (field.type === 'address') ? 'address' : 'text',
         placeholder: field.type,
         validator: ['required', field.type],
       }

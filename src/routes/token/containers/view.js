@@ -21,8 +21,8 @@ const Container = props => (
             Execute <span className="caret" />
           </button>
           <ul className="dropdown-menu">
-            {_.values(props.formsTx).map((form, index) =>
-              <li key={index}><Link to={'/token/send/' + props.token.address + '/' + form.name}>{form.name}</Link></li>
+            {props.formsTx.map((form, index) =>
+              <li key={index}><Link to={'/token/send/' + props.token.address + '/' + form}>{form}</Link></li>
             )}
           </ul>
         </div>
@@ -67,7 +67,7 @@ function mapStateToProps(state, props) {
       _.forEach(item.inputs, (field) => {
         formsConstant[idForm].fields[field.name] = {
           value: '',
-          type: 'text',
+          type: (field.type === 'address') ? 'address' : 'text',
           placeholder: field.type,
           validator: ['required', field.type],
         }
@@ -75,24 +75,10 @@ function mapStateToProps(state, props) {
       formsConstant[idForm].onValidate = form => validate(formsConstant[idForm].fields, form)
     }
   })
-  const formsTx = {}
+  const formsTx = []
   _.forEach(token.abi, (item) => {
     if (_.has(item, 'constant') && item.constant === false) {
-      const idForm = address + item.name;
-      formsTx[idForm] = {
-        idForm,
-        name: item.name,
-        fields: {}
-      }
-      _.forEach(item.inputs, (field) => {
-        formsTx[idForm].fields[field.name] = {
-          value: '',
-          type: 'text',
-          placeholder: field.type,
-          validator: ['required', field.type],
-        }
-      })
-      formsTx[idForm].onValidate = form => validate(formsTx[idForm].fields, form)
+      formsTx.push(item.name)
     }
   })
   return {
