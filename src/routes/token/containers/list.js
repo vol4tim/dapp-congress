@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux'
 import { Link } from 'react-router-dom'
 import _ from 'lodash'
 import { Layout } from '../components/common'
+import Account from '../../../shared/components/common/account'
 import { del } from '../../../modules/token/actions';
 
 const List = props => (
@@ -19,8 +20,7 @@ const List = props => (
         {props.items.map((item, index) =>
           <tr key={index}>
             <td>
-              {item.info.name}<br />
-              <small>{item.address}</small>
+              <Account name={item.info.name} address={item.address} isToken />
             </td>
             <td>
               <div className="btn-group">

@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux'
 import _ from 'lodash'
 import hett from 'hett'
 import { Layout } from '../components/common'
+import Account from '../../../shared/components/common/account'
 import { removeMember } from '../../../modules/members/actions';
 
 const List = props => (
@@ -19,8 +20,7 @@ const List = props => (
         {props.items.map((item, index) =>
           <tr key={index}>
             <td>
-              {item.name}<br />
-              <small>{item.address}</small>
+              <Account name={item.name} address={item.address} />
             </td>
             <td>
               {props.isOwner ?

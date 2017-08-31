@@ -1,14 +1,17 @@
 import React from 'react'
-import Account from '../../../addressBook/containers/account'
 import Toggle from '../../containers/toggle'
 import Check from '../../containers/check'
+import Account from '../../../../shared/components/common/account'
 import { timeConverter } from '../../../../utils/helper'
 
 const Info = props => (
   <ul className="list-group">
     <li className="list-group-item">executed: <b>{(props.proposal.executed) ? 'true' : 'false'}</b></li>
     <li className="list-group-item">proposalPassed: <b>{(props.proposal.proposalPassed) ? 'true' : 'false'}</b></li>
-    <li className="list-group-item">recipient: <Account address={props.proposal.recipient} /></li>
+    <li className="list-group-item">
+      <div className="pull-left">recipient: </div>
+      <Account address={props.proposal.recipient} />
+    </li>
     <li className="list-group-item">amount: <b>{props.proposal.amount} ETH</b></li>
     <li className="list-group-item">description: <b>{props.proposal.description}</b></li>
     <li className="list-group-item">votingDeadline: <b>{timeConverter(props.proposal.votingDeadline)}</b></li>
