@@ -39,17 +39,11 @@ export function isLoad(bool) {
   }
 }
 
-function loadToken(token) {
+function loadToken(token, canReject = true) {
   let abi = {};
   return hett.getAbiByName(token.type)
     .then((result) => {
       abi = result;
-      // _.forEach(result, (item) => {
-      //   console.log(item);
-      //   if (_.has(item, 'constant') && item.constant && item.inputs.length === 0) {
-      //     console.log(item.name);
-      //   }
-      // })
       return hett.getContract(abi, token.address)
     })
     .then(contract => (
@@ -84,7 +78,12 @@ function loadToken(token) {
       //   dispatch(loadModule(address))
       // })
     ))
-    .catch(e => Promise.reject(e))
+    .catch((e) => {
+      if (canReject) {
+        Promise.reject(e)
+      }
+      Promise.resolve(false)
+    })
 }
 
 export function load() {
@@ -94,13 +93,21 @@ export function load() {
     const items = []
     _.forEach(tokens, (token) => {
       dispatch(add(token))
-      items.push(loadToken(token))
+      items.push(loadToken(token, false))
     })
     Promise.all(items)
       .then((result) => {
-        _.forEach(result, (item) => {
-          dispatch(setInfo(item.address, item.abi, item.info))
+        _.forEach(result, (item, index) => {
+          if (item) {
+            dispatch(setInfo(item.address, item.abi, item.info))
+          } else {
+            dispatch(remove(tokens[index].address))
+          }
         })
+        dispatch(isLoad(false))
+      })
+      .catch((e) => {
+        console.log(e);
         dispatch(isLoad(false))
       })
   }
@@ -126,7 +133,7 @@ export function save(form) {
     tokens.push(token)
     store.set('tokens', tokens)
     dispatch(add(token))
-    dispatch(loadToken(token))
+    loadToken(token)
       .then((result) => {
         dispatch(setInfo(token.address, result.abi, result.info))
         dispatch(actionsForm.stop('token'));
