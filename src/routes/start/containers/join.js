@@ -6,6 +6,7 @@ import { Form } from 'vol4-form'
 import { Layout } from '../components/common'
 import { Join as Fields } from '../components/form'
 import { saveField } from '../../../modules/settings/actions';
+import { validate } from '../../../utils/helper';
 
 const Container = props => (
   <Layout title="Join congress address">
@@ -18,20 +19,16 @@ const Container = props => (
 )
 
 function mapStateToProps() {
-  return {
-    fields: {
-      address: {
-        value: '',
-        type: 'text'
-      }
-    },
-    onValidate: (form) => {
-      const errors = {}
-      if (form.address === '') {
-        errors.address = 'обязательное поле'
-      }
-      return errors;
+  const fields = {
+    address: {
+      value: '',
+      type: 'text',
+      validator: ['required', 'address'],
     }
+  }
+  return {
+    fields,
+    onValidate: form => validate(fields, form)
   }
 }
 function mapDispatchToProps(dispatch) {

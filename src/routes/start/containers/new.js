@@ -7,6 +7,7 @@ import { Form } from 'vol4-form'
 import { Layout } from '../components/common'
 import { New as Fields } from '../components/form'
 import { createCongress } from '../../../modules/congress/actions';
+import { validate } from '../../../utils/helper';
 
 class Container extends Component {
   constructor(props) {
@@ -40,41 +41,31 @@ class Container extends Component {
 }
 
 function mapStateToProps() {
-  return {
-    fields: {
-      quorum: {
-        value: '',
-        type: 'text'
-      },
-      minutes: {
-        value: '',
-        type: 'text'
-      },
-      majority: {
-        value: '',
-        type: 'text'
-      },
-      leader: {
-        value: hett.web3h.coinbase(),
-        type: 'text'
-      }
+  const fields = {
+    quorum: {
+      value: '',
+      type: 'text',
+      validator: ['required', 'unit'],
     },
-    onValidate: (form) => {
-      const errors = {}
-      if (form.quorum === '') {
-        errors.quorum = 'обязательное поле'
-      }
-      if (form.minutes === '') {
-        errors.minutes = 'обязательное поле'
-      }
-      if (form.majority === '') {
-        errors.majority = 'обязательное поле'
-      }
-      if (form.leader === '') {
-        errors.leader = 'обязательное поле'
-      }
-      return errors;
+    minutes: {
+      value: '',
+      type: 'text',
+      validator: ['required', 'unit'],
+    },
+    majority: {
+      value: '',
+      type: 'text',
+      validator: ['required', 'unit'],
+    },
+    leader: {
+      value: hett.web3h.coinbase(),
+      type: 'text',
+      validator: ['required', 'address'],
     }
+  }
+  return {
+    fields,
+    onValidate: form => validate(fields, form)
   }
 }
 function mapDispatchToProps(dispatch) {

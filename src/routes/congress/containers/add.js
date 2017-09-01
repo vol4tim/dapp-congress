@@ -5,6 +5,7 @@ import { Form } from 'vol4-form'
 import { Layout } from '../components/common'
 import AddProposal from '../components/addProposal';
 import { addProposal } from '../../../modules/congress/actions';
+import { validate } from '../../../utils/helper';
 
 const Add = props => (
   <Layout title="Add voting">
@@ -16,45 +17,36 @@ const Add = props => (
 )
 
 function mapStateToProps() {
-  return {
-    fields: [
-      {
-        name: 'beneficiary',
-        value: '',
-        type: 'text'
-      },
-      {
-        name: 'amount',
-        value: '0',
-        type: 'text'
-      },
-      {
-        name: 'jobDescription',
-        value: '',
-        type: 'text'
-      },
-      {
-        name: 'abi',
-        value: '',
-        type: 'textarea'
-      },
-      {
-        name: 'action',
-        value: '',
-        type: 'select'
-      },
-      {
-        name: 'params',
-        fields: []
-      }
-    ],
-    onValidate: (form) => {
-      const errors = {}
-      if (form.beneficiary === '') {
-        errors.beneficiary = 'обязательное поле'
-      }
-      return errors;
+  const fields = {
+    beneficiary: {
+      value: '',
+      type: 'text',
+      validator: ['required', 'address'],
+    },
+    amount: {
+      value: '0',
+      type: 'text',
+    },
+    jobDescription: {
+      value: '',
+      type: 'text'
+    },
+    abi: {
+      value: '',
+      type: 'textarea'
+    },
+    action: {
+      value: '',
+      type: 'select'
+    },
+    params: {
+      name: 'params',
+      fields: []
     }
+  }
+  return {
+    fields,
+    onValidate: form => validate(fields, form)
   }
 }
 function mapDispatchToProps(dispatch) {

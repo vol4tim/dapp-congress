@@ -5,6 +5,7 @@ import { Form } from 'vol4-form'
 import { Layout } from '../components/common'
 import { Add } from '../components/form';
 import { save } from '../../../modules/token/actions';
+import { validate } from '../../../utils/helper';
 
 const Container = props => (
   <Layout title={'Add address'}>
@@ -19,17 +20,12 @@ function mapStateToProps() {
     address: {
       value: '',
       type: 'text',
+      validator: ['required', 'address'],
     }
   }
   return {
     fields,
-    onValidate: (form) => {
-      const errors = {}
-      if (form.address === '') {
-        errors.address = 'обязательное поле'
-      }
-      return errors;
-    }
+    onValidate: form => validate(fields, form)
   }
 }
 function mapDispatchToProps(dispatch) {

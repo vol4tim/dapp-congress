@@ -5,6 +5,7 @@ import { Form } from 'vol4-form'
 import { Layout } from '../components/common'
 import { Add } from '../components/form';
 import { addMember } from '../../../modules/members/actions';
+import { validate } from '../../../utils/helper';
 
 const Container = props => (
   <Layout title="Add member">
@@ -19,24 +20,17 @@ function mapStateToProps() {
     address: {
       value: '',
       type: 'text',
+      validator: ['required', 'address'],
     },
     name: {
       value: '',
       type: 'text',
+      validator: ['required'],
     }
   }
   return {
     fields,
-    onValidate: (form) => {
-      const errors = {}
-      if (form.address === '') {
-        errors.address = 'обязательное поле'
-      }
-      if (form.name === '') {
-        errors.name = 'обязательное поле'
-      }
-      return errors;
-    }
+    onValidate: form => validate(fields, form)
   }
 }
 function mapDispatchToProps(dispatch) {

@@ -7,6 +7,7 @@ import { Form } from 'vol4-form'
 import { Layout } from '../components/common'
 import { Form as Fields } from '../components/form'
 import { saveAll } from '../../../modules/settings/actions';
+import { validate } from '../../../utils/helper';
 
 const Container = props => (
   <Layout title="Settings">
@@ -23,18 +24,13 @@ function mapStateToProps(state) {
   _.forEach(state.settings.fields, (value, field) => {
     fields[field] = {
       value,
-      type: 'text'
+      type: 'text',
+      validator: ['required', 'address'],
     }
   })
   return {
     fields,
-    onValidate: (form) => {
-      const errors = {}
-      if (form.address === '') {
-        errors.address = 'обязательное поле'
-      }
-      return errors;
-    }
+    onValidate: form => validate(fields, form)
   }
 }
 function mapDispatchToProps(dispatch) {

@@ -6,6 +6,7 @@ import { Form } from 'vol4-form'
 import { Layout } from '../components/common'
 import { Add, Edit } from '../components/form';
 import { save } from '../../../modules/addressBook/actions';
+import { validate } from '../../../utils/helper';
 
 const Container = props => (
   <Layout title={(props.isNew) ? 'Add address' : 'Edit address'}>
@@ -24,10 +25,12 @@ function mapStateToProps(state, props) {
     address: {
       value: '',
       type: 'text',
+      validator: ['required', 'address'],
     },
     name: {
       value: '',
       type: 'text',
+      validator: ['required'],
     }
   }
   let isNew = true;
@@ -40,16 +43,7 @@ function mapStateToProps(state, props) {
   return {
     isNew,
     fields,
-    onValidate: (form) => {
-      const errors = {}
-      if (form.address === '') {
-        errors.address = 'обязательное поле'
-      }
-      if (form.name === '') {
-        errors.name = 'обязательное поле'
-      }
-      return errors;
-    }
+    onValidate: form => validate(fields, form)
   }
 }
 function mapDispatchToProps(dispatch) {
