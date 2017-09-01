@@ -25,6 +25,27 @@ export const formatDecimals = (price, decimals) => {
   return priceNum.shift(-decimals).toNumber();
 }
 
+export const getNetworkName = () => {
+  let network;
+  switch (Number(hett.web3.version.network)) {
+    case 1:
+      network = 'main'
+      break;
+    case 3:
+      network = 'ropsten'
+      break;
+    case 4:
+      network = 'rinkeby'
+      break;
+    case 42:
+      network = 'kovan'
+      break;
+    default:
+      network = '???'
+  }
+  return network
+}
+
 const getUrlAbi = (contract) => {
   let isBuilder = false;
   if (/builder/i.test(contract)) {
