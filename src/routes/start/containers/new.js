@@ -45,17 +45,17 @@ function mapStateToProps() {
     quorum: {
       value: '',
       type: 'text',
-      validator: ['required', 'unit'],
+      validator: ['required', 'uint'],
     },
     minutes: {
       value: '',
       type: 'text',
-      validator: ['required', 'unit'],
+      validator: ['required', 'uint'],
     },
     majority: {
       value: '',
       type: 'text',
-      validator: ['required', 'unit'],
+      validator: ['required', 'uint'],
     },
     leader: {
       value: hett.web3h.coinbase(),
