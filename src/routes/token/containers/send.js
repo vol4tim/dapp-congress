@@ -1,45 +1,16 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router-dom'
 import _ from 'lodash'
 import hett from 'hett'
-import { Form } from 'vol4-form'
-import { Layout } from '../components/common'
-import { Fields } from '../components/send';
-import { Main } from '../components/view';
-import { send } from '../../../modules/token/actions';
-import { validate } from '../../../utils/helper';
+import Layout from '../components/common'
+import Main from '../components/send'
+import { send } from '../../../modules/token/actions'
+import { validate } from '../../../utils/helper'
 
 const Container = props => (
   <Layout title={'Execute ' + props.token.info.name} desc={props.token.address}>
-    <div className="row">
-      <div className="col-md-8">
-        <Main {...props.token} />
-      </div>
-      <div className="col-md-4">
-        <Link to={'/token/view/' + props.token.address} className="btn btn-primary pull-right">Back</Link>
-      </div>
-    </div>
-    <hr />
-    {_.isEmpty(props.form) ?
-      <p>...</p>
-      :
-      <Form
-        id={props.form.idForm}
-        {...props.form}
-        network={props.network}
-        onSubmit={data => props.onSend(
-          props.form.idForm,
-          props.token.address,
-          props.token.type,
-          props.form.name,
-          data
-        )}
-      >
-        <Fields />
-      </Form>
-    }
+    <Main {...props} />
   </Layout>
 )
 

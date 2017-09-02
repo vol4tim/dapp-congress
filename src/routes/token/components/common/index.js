@@ -1,1 +1,2 @@
-export { default as Layout } from './layout';
+export default from './layout';
+export { default as Info } from './info';

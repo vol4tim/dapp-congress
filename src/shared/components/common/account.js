@@ -15,10 +15,16 @@ const Account = ({ name, address, isToken }) => {
         style={{ float: 'left', width: 40, height: 40, marginRight: 5 }}
         dangerouslySetInnerHTML={{ __html: Jdenticon.toSvg(address, 40) }}
       />
-      <div>
-        <b>{name}</b><br />
-        <EthLink small address={address} type={type} />
-      </div>
+      {name ?
+        <div>
+          <b>{name}</b><br />
+          <EthLink small address={address} type={type} />
+        </div>
+        :
+        <div style={{ paddingTop: 10 }}>
+          <EthLink small address={address} type={type} />
+        </div>
+      }
     </div>
   )
 }

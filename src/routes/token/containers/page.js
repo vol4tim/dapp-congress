@@ -20,7 +20,7 @@ class Container extends Component {
           :
           <Switch>
             <Route exact path={this.props.match.path} component={Pages.List} />
-            <Route path={`${this.props.match.path}/add`} component={Pages.Form} />
+            <Route path={`${this.props.match.path}/add`} component={Pages.Add} />
             <Route path={`${this.props.match.path}/view/:address`} component={Pages.View} />
             <Route path={`${this.props.match.path}/send/:address/:func`} component={Pages.Send} />
             <Redirect to={`${this.props.match.url}`} />

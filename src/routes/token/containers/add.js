@@ -1,17 +1,14 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Form } from 'vol4-form'
-import { Layout } from '../components/common'
-import { Add } from '../components/form';
+import Layout from '../components/common'
+import Main from '../components/add'
 import { save } from '../../../modules/token/actions';
 import { validate } from '../../../utils/helper';
 
 const Container = props => (
   <Layout title={'Add address'}>
-    <Form id="token" {...props} onSubmit={props.onSubmit}>
-      <Add />
-    </Form>
+    <Main {...props} />
   </Layout>
 )
 

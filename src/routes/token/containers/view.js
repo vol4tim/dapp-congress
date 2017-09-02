@@ -1,51 +1,15 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router-dom'
 import _ from 'lodash'
-import { Form } from 'vol4-form'
-import { Layout } from '../components/common'
-import { Main, Fields } from '../components/view';
-import { getConstant } from '../../../modules/token/actions';
-import { validate } from '../../../utils/helper';
+import Layout from '../components/common'
+import Main from '../components/view';
+import { getConstant } from '../../../modules/token/actions'
+import { validate } from '../../../utils/helper'
 
 const Container = props => (
   <Layout title={props.token.info.name} desc={props.token.address}>
-    <div className="row">
-      <div className="col-md-8">
-        <Main {...props.token} />
-      </div>
-      <div className="col-md-4">
-        <div className="dropdown pull-right">
-          <button className="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-            Execute <span className="caret" />
-          </button>
-          <ul className="dropdown-menu">
-            {props.formsTx.map((form, index) =>
-              <li key={index}><Link to={'/token/send/' + props.token.address + '/' + form}>{form}</Link></li>
-            )}
-          </ul>
-        </div>
-      </div>
-    </div>
-    <hr />
-    <h3>Read</h3>
-    {_.values(props.formsConstant).map((form, index) =>
-      <Form
-        key={index}
-        id={form.idForm}
-        {...form}
-        onSubmit={data => props.onGetConstant(
-          form.idForm,
-          props.token.address,
-          props.token.type,
-          form.name,
-          data
-        )}
-      >
-        <Fields />
-      </Form>
-    )}
+    <Main {...props} />
   </Layout>
 )
 
@@ -83,7 +47,7 @@ function mapStateToProps(state, props) {
   })
   return {
     token,
-    formsConstant,
+    formsConstant: _.values(formsConstant),
     formsTx
   }
 }
