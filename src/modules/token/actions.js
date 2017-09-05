@@ -190,7 +190,7 @@ export function contractSend(abi, address, action, values, args = {}) {
       })
       .catch((e) => {
         console.log(e);
-        return Promise.reject();
+        return Promise.reject(e);
       })
   )
 }
@@ -209,7 +209,10 @@ export function send(idForm, address, abiName, func, form) {
         dispatch(actionsForm.success(idForm, transaction.hash));
         dispatch(actionsForm.stop(idForm))
       })
-      .catch(() => {
+      .catch((e) => {
+        if (!_.has(e, 'isOperational')) {
+          dispatch(actionsForm.error(idForm, 'The transaction will throw an exception'))
+        }
         dispatch(actionsForm.stop(idForm))
       })
   }

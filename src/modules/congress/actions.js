@@ -284,7 +284,7 @@ export function contractSend(abi, address, action, values, args = {}) {
       })
       .catch((e) => {
         console.log(e);
-        return Promise.reject();
+        return Promise.reject(e);
       })
   )
 }
@@ -321,7 +321,10 @@ export function addProposal(form) {
         dispatch(formActions.stop('addProposal'))
         dispatch(formActions.success('addProposal', 'Создано новое голосование'))
       })
-      .catch(() => {
+      .catch((e) => {
+        if (!_.has(e, 'isOperational')) {
+          dispatch(formActions.error('addProposal', 'The transaction will throw an exception'))
+        }
         dispatch(formActions.stop('addProposal'))
       })
   }
@@ -341,7 +344,10 @@ export function execute(id, form) {
         dispatch(formActions.stop('execute' + id))
         dispatch(formActions.success('execute' + id, 'Исполнено'))
       })
-      .catch(() => {
+      .catch((e) => {
+        if (!_.has(e, 'isOperational')) {
+          dispatch(formActions.error('execute' + id, 'The transaction will throw an exception'))
+        }
         dispatch(formActions.stop('execute' + id))
       })
   }
@@ -357,7 +363,10 @@ export function vote(id, form) {
         dispatch(formActions.stop('vote' + id))
         dispatch(formActions.success('vote' + id, 'Голос принят'))
       })
-      .catch(() => {
+      .catch((e) => {
+        if (!_.has(e, 'isOperational')) {
+          dispatch(formActions.error('vote' + id, 'The transaction will throw an exception'))
+        }
         dispatch(formActions.stop('vote' + id))
       })
   }
