@@ -9,7 +9,6 @@ import Footer from '../components/app/footer'
 import Sidebar from '../components/app/sidebar'
 import { flashMessage, setLanguage } from '../../modules/app/actions';
 import { read as readLogs, clearSave as clearLogs } from '../../modules/logs/actions';
-import { getNetworkName } from '../../utils/helper';
 
 const style = {
   Containers: {
@@ -68,7 +67,7 @@ function mapStateToProps(state) {
     balanceUsd: state.congress.balanceUsd,
     logs: _.reverse(state.logs.messages.slice(-5)),
     isReadLogs: state.logs.isRead,
-    network: getNetworkName()
+    network: state.app.network
   }
 }
 function mapDispatchToProps(dispatch) {

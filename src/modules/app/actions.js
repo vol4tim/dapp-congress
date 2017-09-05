@@ -1,17 +1,25 @@
 import Notifications from 'react-notification-system-redux';
 import i18next from 'i18next'
 import _ from 'lodash'
-import { LOAD, SET_LANGUAGE } from './actionTypes'
+import { LOAD, NETWORK, SET_LANGUAGE } from './actionTypes'
 import { load as loadSettings } from '../settings/actions';
 import { loadBalance, loadProposals, loadLogs, events } from '../congress/actions';
 import { loadAccounts } from '../addressBook/actions';
 import { load as loadMembers } from '../members/actions';
 import { save as addLog, load as loadMessagesLog } from '../logs/actions';
+import { getNetworkName } from '../../utils/helper';
 
 export function setLoad(bool) {
   return {
     type: LOAD,
     payload: bool
+  }
+}
+
+export function setNetwork(network) {
+  return {
+    type: NETWORK,
+    payload: network
   }
 }
 
@@ -45,6 +53,10 @@ export function setLanguage(language) {
 export function load() {
   return (dispatch) => {
     dispatch(setLoad(false));
+    getNetworkName()
+      .then((result) => {
+        dispatch(setNetwork(result))
+      })
     dispatch(loadSettings())
       .then((settings) => {
         if (_.has(settings, 'address') && settings.address !== '') {

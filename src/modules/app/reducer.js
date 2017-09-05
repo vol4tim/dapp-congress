@@ -1,9 +1,10 @@
-import { LOAD, SET_LANGUAGE } from './actionTypes'
+import { LOAD, NETWORK, SET_LANGUAGE } from './actionTypes'
 
 const initialState = {
   isLoaded: false,
   title: 'dApp Congress',
-  language: 'en'
+  language: 'en',
+  network: ''
 }
 
 export default function app(state = initialState, action) {
@@ -11,6 +12,9 @@ export default function app(state = initialState, action) {
     case LOAD: {
       return { ...state, isLoaded: action.payload }
     }
+
+    case NETWORK:
+      return { ...state, network: action.payload }
 
     case SET_LANGUAGE:
       return { ...state, language: action.payload }
