@@ -97,20 +97,21 @@ export class ProviderAddress {
   }
 
   getAddress(name) {
-    const network = hett.web3.version.network
-    if (_.has(this.addresses, network)) {
-      if (_.has(this.addresses[network], name)) {
-        return new Promise((resolve) => {
-          resolve(this.addresses[network][name]);
-        });
-      }
-    }
-    if (_.has(this.addresses, name)) {
-      return new Promise((resolve) => {
-        resolve(this.addresses[name]);
-      });
-    }
-    return Promise.reject('Address not found')
+    const funcAsync = Promise.promisify(hett.web3.version.getNetwork);
+    return funcAsync()
+      .then((result) => {
+        const network = Number(result)
+        if (_.has(this.addresses, network)) {
+          if (_.has(this.addresses[network], name)) {
+            return this.addresses[network][name]
+          }
+        }
+        if (_.has(this.addresses, name)) {
+          return this.addresses[name]
+        }
+        return Promise.reject('Address not found')
+      })
+      .catch(e => Promise.reject(e))
   }
 }
 

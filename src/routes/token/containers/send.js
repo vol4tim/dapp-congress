@@ -2,7 +2,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import _ from 'lodash'
-import hett from 'hett'
 import Layout from '../components/common'
 import Main from '../components/send'
 import { send } from '../../../modules/token/actions'
@@ -47,7 +46,7 @@ function mapStateToProps(state, props) {
     }
     form.onValidate = data => validate(form.fields, data)
   }
-  const network = (Number(hett.web3.version.network) === 42) ? 'kovan.' : ''
+  const network = state.app.network !== 'main' ? state.app.network : ''
   return {
     token,
     form,
