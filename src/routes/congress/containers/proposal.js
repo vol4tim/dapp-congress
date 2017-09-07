@@ -39,26 +39,8 @@ function mapStateToProps(state, props) {
   let myVote = false
   if (_.has(state.congress.proposals, props.match.params.id)) {
     proposal = state.congress.proposals[props.match.params.id]
-    if (proposal.currentResult < 0) {
-      ok = proposal.currentResult + proposal.numberOfVotes
-      no = proposal.numberOfVotes - ok
-      if (ok > no) {
-        const t = no
-        no = ok
-        ok = t
-      }
-    } else if (proposal.currentResult > 0) {
-      ok = proposal.numberOfVotes - proposal.currentResult
-      no = proposal.numberOfVotes - ok
-      if (ok < no) {
-        const t = no
-        no = ok
-        ok = t
-      }
-    } else {
-      ok = proposal.numberOfVotes / 2
-      no = proposal.numberOfVotes - ok
-    }
+    ok = proposal.numberOfVotes - ((proposal.currentResult - proposal.numberOfVotes) / -2)
+    no = proposal.numberOfVotes - ok
     const coinbase = hett.web3h.coinbase()
     if (_.has(proposal, 'voted') && _.has(proposal.voted, coinbase)) {
       myVote = true;
