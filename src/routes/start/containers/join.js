@@ -31,12 +31,15 @@ function mapStateToProps() {
     onValidate: form => validate(fields, form)
   }
 }
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch, props) {
   const actions = bindActionCreators({
     saveField
   }, dispatch)
   return {
-    onSubmit: form => actions.saveField('address', form.address)
+    onSubmit: (form) => {
+      actions.saveField('address', form.address)
+        .then(() => props.history.push('/'))
+    }
   }
 }
 

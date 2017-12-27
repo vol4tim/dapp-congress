@@ -41,6 +41,7 @@ export function saveField(field, value) {
     dispatch(setField(field, value))
     dispatch(loadApp())
     dispatch(actionsForm.stop('saveField'));
+    return Promise.resolve()
   }
 }
 
