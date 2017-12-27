@@ -25,6 +25,8 @@ class Bootstrap extends Component {
       <Route render={() => {
         if (!this.props.isLoaded) {
           return <Load />
+        } else if (this.props.location.pathname === '/factory') {
+          return <Route path="/factory" component={Factory.Page} />
         } else if (this.props.settings.fields.address === '') {
           return <Redirect to="/start" />
         }

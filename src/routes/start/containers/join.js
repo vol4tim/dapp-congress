@@ -14,7 +14,10 @@ const Container = props => (
       <Fields />
     </Form>
     <hr />
-    <Link className="btn btn-default" to="/start/new">Create new congress</Link>
+    <div className="btn-group">
+      <Link className="btn btn-default" to="/start/new">Create new congress</Link>
+      <Link className="btn btn-default" to="/factory">Factory</Link>
+    </div>
   </Layout>
 )
 
